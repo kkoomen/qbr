@@ -26,7 +26,7 @@ class Qbr:
     def run(self):
         full_cube_state = {}
         for image in self.images:
-            # Here we receive the following two-dimensional array from the
+            # Here we receive the following jagged array from the
             # ColorDetector (just an example. Could be any scramble).
             #
             # [[ 'green' , 'red'    , 'white' ],
@@ -43,7 +43,7 @@ class Qbr:
             #  [ 'B' , 'L' , 'D' ]]
             state = ColorDetector.to_letter(humanizedState)
 
-            # join the two-dimensional arrays into a string.
+            # join the jagged arrays into a string.
             combinedStates = combine.state(face, state)
 
             # append to full_cube_state where the index 0 is the face

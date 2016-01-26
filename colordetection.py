@@ -29,7 +29,7 @@ class ColorDetection:
 
     def to_letter(self, side):
         """
-        Since the ColorDetector returns a dimensional array with all the colors
+        Since the ColorDetector returns a jagged array with all the colors
         we also need for every color to determine a face with it.
 
         :param side: this will be one side of the cube which includes 9 colors.

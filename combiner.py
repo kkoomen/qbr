@@ -22,7 +22,7 @@ class Combine:
 
     def state(self, face, state):
         """
-        Comebine the two-dimensional array into a string.
+        Comebine the jagged array into a string.
 
         :param face: the face color (in human-readable format).
         :param state: the scrambled state of a side.
