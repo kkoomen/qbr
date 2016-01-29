@@ -14,32 +14,11 @@ except ImportError as err:
 
 class ColorDetection:
 
-    def to_letter(self, side):
-        """
-        Since the ColorDetector returns a jagged array with all the colors
-        we also need for every color to determine a face with it.
-
-        :param side: this will be one side of the cube which includes 9 colors.
-        :returns: list
-        """
-        letters = {
-            'green'  : 'F',
-            'white'  : 'U',
-            'blue'   : 'B',
-            'red'    : 'R',
-            'orange' : 'L',
-            'yellow' : 'D'
-        }
-        state = [[0, 0, 0],
-                 [0, 0, 0],
-                 [0, 0, 0]]
-        for yi,y in enumerate(side):
-            for xi,x in enumerate(side[yi]):
-                color = side[yi][xi]
-                state[yi][xi] = letters[color]
-        return state
-
     def get_color_name(self, hsv):
+        """ Get the name of the color based on the hue.
+
+        :returns: string
+        """
         (h,s,v) = hsv
         if h > 150 or h <= 10:
             return 'red'
@@ -59,7 +38,7 @@ class ColorDetection:
     def average_rgb(self, roi):
         """ Average the RGB colors in a region of interest.
 
-        :param roi: the image array.
+        :param roi: the image array
         :returns: tuple
         """
         red   = 0

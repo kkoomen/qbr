@@ -1,5 +1,5 @@
 # qbr.
-A rubik's cube solver written in python 3.
+A rubik's cube solver written in python 3 using OpenCV.
 
 ![demo](demo.png)
 

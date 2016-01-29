@@ -9,11 +9,7 @@
 from sys import exit as Die
 try:
     import sys
-    import os
     import kociemba
-
-    from colordetection import ColorDetector
-    from combiner import combine
     from video import webcam
 except Exception as err:
     Die(err)

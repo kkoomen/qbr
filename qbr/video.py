@@ -66,10 +66,10 @@ class Webcam:
         """
         Get the main RGB color for a name.
 
-        :param name: the main color name that has to be converted to RGB
+        :param name: the color name that is requested
         :returns: tuple
         """
-        hexs = {
+        color = {
             'red'    : (0,0,255),
             'orange' : (0,165,255),
             'blue'   : (255,0,0),
@@ -77,7 +77,7 @@ class Webcam:
             'white'  : (255,255,255),
             'yellow' : (0,255,255)
         }
-        return hexs[name]
+        return color[name]
 
     def color_to_notation(self, color):
         """
@@ -87,7 +87,7 @@ class Webcam:
 
         :param color: the requested color
         """
-        colors = {
+        notation = {
             'green'  : 'F',
             'white'  : 'U',
             'blue'   : 'B',
@@ -95,7 +95,7 @@ class Webcam:
             'orange' : 'L',
             'yellow' : 'D'
         }
-        return colors[color]
+        return notation[color]
 
     def scan(self):
         """
