@@ -4,9 +4,9 @@ A rubik's cube solver written in python 3 using OpenCV.
 ![demo](demo.png)
 
 You can scan in all 6 sides of your rubik's cube. Order doesn't matter. When you
-are satisfied with the preview showing in the top left corner you press space bar.
-When you have scanned in all your 6 sides, you can press escape and the algorithm
-is shown below for example as follows:
+are satisfied with the preview showing in the top left corner you press the `space` bar.
+When you have scanned in all your 6 sides, you can press `escape` and the algorithm
+is shown below as follows (just an example output):
 
 ```
 $ ./qbr.py
