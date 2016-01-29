@@ -3,7 +3,7 @@
 # Filename      : combiner.py
 # Author        : Kim K
 # Created       : Tue, 26 Jan 2016
-# Last Modified : Tue, 26 Jan 2016
+# Last Modified : Fri, 29 Jan 2016
 
 
 class Combine:
@@ -17,7 +17,7 @@ class Combine:
         """
         combined = ''
         for face in ('U','R','F','D','L','B'):
-            combined += sides[face]
+            combined += ''.join(sides[face])
         return combined
 
     def state(self, face, state):
@@ -26,7 +26,7 @@ class Combine:
 
         :param face: the face color (in human-readable format).
         :param state: the scrambled state of a side.
-        :returns: array
+        :returns: list
         """
         letters = {
             'green'  : 'F',
