@@ -1,0 +1,42 @@
+{
+    "en": {
+        "R"  : "Turn the right side a quarter turn away from you." ,
+        "R'" : "Turn the right side a quarter turn towards you." ,
+        "R2" : "Turn the right side 180 degrees." ,
+        "L"  : "Turn the left side a quarter turn towards you." ,
+        "L'" : "Turn the left side a quarter turn away from you." ,
+        "L2" : "Turn the left side 180 degrees." ,
+        "U"  : "Turn the top layer a quarter turn to the left." ,
+        "U'" : "Turn the top layer a quarter turn to the right." ,
+        "U2" : "Turn the top layer 180 degrees.",
+        "D"  : "Turn the bottom layer a quarter turn to the right." ,
+        "D'" : "Turn the bottom layer a quarter turn to the left." ,
+        "D2" : "Turn the bottom layer 180 degrees." ,
+        "B"  : "Turn the back side a quarter turn to the left." ,
+        "B'" : "Turn the back side a quarter turn to the right." ,
+        "B2" : "Turn the back side 180 degrees." ,
+        "F"  : "Turn the front side a quarter turn to the right." ,
+        "F'" : "Turn the front side a quarter turn to the left." ,
+        "F2" : "Turn the front side 180 degrees."
+    },
+    "nl": {
+        "R"  : " Draai de rechterkant een kwartslag van je af." ,
+        "R'" : " Draai de rechterkant een kwartslag naar je toe." ,
+        "R2" : " Draai de rechterkant 180 graden." ,
+        "L"  : " Draai de linkerkant een kwartslag naar je toe." ,
+        "L'" : " Draai de linkerkant een kwartslag van je af." ,
+        "L2" : " Draai de linkerkant 180 graden." ,
+        "U"  : " Draai de bovenste laag een kwartslag naar links." ,
+        "U'" : " Draai de bovenste laag een kwartslag naar rechts." ,
+        "U2" : " Draai de bovenste laag 180 graden." ,
+        "D"  : " Draai de onderste laag een kwartslag naar rechts." ,
+        "D'" : " Draai de onderste laag een kwartslag naar links." ,
+        "D2" : " Draai de onderste laag 180 graden." ,
+        "B"  : " Draai de achterkant een kwartslag naar links." ,
+        "B'" : " Draai de achterkant een kwartslag naar rechts." ,
+        "B2" : " Draai de achterkant 180 graden." ,
+        "F"  : " Draai de voorkant een kwartslag naar rechts." ,
+        "F'" : " Draai de voorkant een kwartslag naar links." ,
+        "F2" : " Draai de voorkant 180 graden."
+    }
+}

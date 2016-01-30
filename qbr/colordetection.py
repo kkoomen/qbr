@@ -3,7 +3,7 @@
 # Filename      : colordetection.py
 # Author        : Kim K
 # Created       : Tue, 26 Jan 2016
-# Last Modified : Fri, 29 Jan 2016
+# Last Modified : Sat, 30 Jan 2016
 
 
 from sys import exit as Die
@@ -35,28 +35,45 @@ class ColorDetection:
 
         return 'white'
 
-    def average_rgb(self, roi):
-        """ Average the RGB colors in a region of interest.
+    def name_to_rgb(self, name):
+        """
+        Get the main RGB color for a name.
+
+        :param name: the color name that is requested
+        :returns: tuple
+        """
+        color = {
+            'red'    : (0,0,255),
+            'orange' : (0,165,255),
+            'blue'   : (255,0,0),
+            'green'  : (0,255,0),
+            'white'  : (255,255,255),
+            'yellow' : (0,255,255)
+        }
+        return color[name]
+
+    def average_hsv(self, roi):
+        """ Average the HSV colors in a region of interest.
 
         :param roi: the image array
         :returns: tuple
         """
-        red   = 0
-        green = 0
-        blue  = 0
+        h   = 0
+        s = 0
+        v  = 0
         num   = 0
         for y in range(len(roi)):
             if y % 10 == 0:
                 for x in range(len(roi[y])):
                     if x % 10 == 0:
-                        b = roi[y][x]
+                        chunk = roi[y][x]
                         num += 1
-                        red += b[0]
-                        green += b[1]
-                        blue += b[2]
-        red /= num
-        green /= num
-        blue /= num
-        return (int(red), int(green), int(blue))
+                        h += chunk[0]
+                        s += chunk[1]
+                        v += chunk[2]
+        h /= num
+        s /= num
+        v /= num
+        return (int(h), int(s), int(v))
 
 ColorDetector = ColorDetection()
