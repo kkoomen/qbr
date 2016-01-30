@@ -98,7 +98,9 @@ class Webcam:
         """
 
         sides   = {}
-        preview = []
+        preview = ['white','white','white',
+                   'white','white','white',
+                   'white','white','white']
         state   = [0,0,0,
                    0,0,0,
                    0,0,0]
@@ -108,8 +110,7 @@ class Webcam:
             key = cv2.waitKey(10) & 0xff
             self.draw_main_stickers(frame)
 
-            if len(preview) > 0:
-                self.draw_preview_stickers(frame, preview)
+            self.draw_preview_stickers(frame, preview)
 
             for index,(x,y) in enumerate(self.stickers):
                 roi          = hsv[y:y+80, x:x+80]
