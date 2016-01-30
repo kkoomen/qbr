@@ -7,7 +7,7 @@ every possible situation, because certain light influences the color detector qb
 # Table of Contents
 - [Introduction](#introduction)
 - [Usage](#usage)
-- [F.A.Q.](#faq)
+    - [Paramaters](#paramaters)
 - [License](#license)
 
 
@@ -50,7 +50,7 @@ solve it if you've scanned it in correctly.
 
 You should now see a solution (or an error if you did it wrong).
 
-##### paramaters
+# paramaters
 
 You can use `-n` or `--normalize` to also output the solution in a "human-readable" format.
 
@@ -61,6 +61,8 @@ You can also specify a language by passing in `-l` or `--language`. Default lang
 is set to `en`. The only language other then english that is available is dutch which
 is specified with `nl`.
 
+
+#### Example run:
 
 ```
 $ ./qbr.py
