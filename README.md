@@ -111,28 +111,28 @@ Starting position:
     front: green
     top: white
 
-    B2 U2 F' R U D' L' B' U L F U F2 R2 F2 D' F2 D R2 D2 (20 moves)
+B2 U2 F' R U D' L' B' U L F U F2 R2 F2 D' F2 D R2 D2 (20 moves)
 
-    1. Turn the back side 180 degrees.
-    2. Turn the top layer 180 degrees.
-    3. Turn the front side a quarter turn to the left.
-    4. Turn the right side a quarter turn away from you.
-    5. Turn the top layer a quarter turn to the left.
-    6. Turn the bottom layer a quarter turn to the left.
-    7. Turn the left side a quarter turn away from you.
-    8. Turn the back side a quarter turn to the right.
-    9. Turn the top layer a quarter turn to the left.
-    10. Turn the left side a quarter turn towards you.
-    11. Turn the front side a quarter turn to the right.
-    12. Turn the top layer a quarter turn to the left.
-    13. Turn the front side 180 degrees.
-    14. Turn the right side 180 degrees.
-    15. Turn the front side 180 degrees.
-    16. Turn the bottom layer a quarter turn to the left.
-    17. Turn the front side 180 degrees.
-    18. Turn the bottom layer a quarter turn to the right.
-    19. Turn the right side 180 degrees.
-    20. Turn the bottom layer 180 degrees.
+1. Turn the back side 180 degrees.
+2. Turn the top layer 180 degrees.
+3. Turn the front side a quarter turn to the left.
+4. Turn the right side a quarter turn away from you.
+5. Turn the top layer a quarter turn to the left.
+6. Turn the bottom layer a quarter turn to the left.
+7. Turn the left side a quarter turn away from you.
+8. Turn the back side a quarter turn to the right.
+9. Turn the top layer a quarter turn to the left.
+10. Turn the left side a quarter turn towards you.
+11. Turn the front side a quarter turn to the right.
+12. Turn the top layer a quarter turn to the left.
+13. Turn the front side 180 degrees.
+14. Turn the right side 180 degrees.
+15. Turn the front side 180 degrees.
+16. Turn the bottom layer a quarter turn to the left.
+17. Turn the front side 180 degrees.
+18. Turn the bottom layer a quarter turn to the right.
+19. Turn the right side 180 degrees.
+20. Turn the bottom layer 180 degrees.
 ```
 
 
