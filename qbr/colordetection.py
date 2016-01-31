@@ -3,7 +3,7 @@
 # Filename      : colordetection.py
 # Author        : Kim K
 # Created       : Tue, 26 Jan 2016
-# Last Modified : Sat, 30 Jan 2016
+# Last Modified : Sun, 31 Jan 2016
 
 
 from sys import exit as Die
@@ -20,15 +20,16 @@ class ColorDetection:
         :returns: string
         """
         (h,s,v) = hsv
-        if h > 150 or h <= 10:
+        #print((h,s,v))
+        if h < 15 and v < 100:
             return 'red'
-        elif h <= 20 and s <= 150:
-            return 'white'
-        elif h <= 20:
+        if h <= 10 and v > 100:
             return 'orange'
-        elif h <= 36:
+        elif h <= 30 and s <= 100:
+            return 'white'
+        elif h <= 40:
             return 'yellow'
-        elif h <= 70:
+        elif h <= 85:
             return 'green'
         elif h <= 130:
             return 'blue'
@@ -59,9 +60,9 @@ class ColorDetection:
         :returns: tuple
         """
         h   = 0
-        s = 0
-        v  = 0
-        num   = 0
+        s   = 0
+        v   = 0
+        num = 0
         for y in range(len(roi)):
             if y % 10 == 0:
                 for x in range(len(roi[y])):

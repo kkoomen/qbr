@@ -3,7 +3,7 @@
 # Filename      : qbr.py
 # Author        : Kim K
 # Created       : Tue, 26 Jan 2016
-# Last Modified : Sat, 30 Jan 2016
+# Last Modified : Sun, 31 Jan 2016
 
 
 from sys import exit as Die
@@ -27,18 +27,28 @@ class Qbr:
 
     def run(self):
         state         = webcam.scan()
-        if state:
-            unsolvedState = combine.sides(state)
+        if not state:
+            print('\033[0;33m[QBR SCAN ERROR] Ops, you did not scan in all 6 sides.')
+            print('Please try again.\033[0m')
+            Die(1)
+
+        unsolvedState = combine.sides(state)
+        try:
             algorithm     = kociemba.solve(unsolvedState)
             length        = len(algorithm.split(' '))
-            print('-- SOLUTION --')
-            print('Starting position:\n    front: green\n    top: white\n')
-            print(algorithm, '({0} moves)'.format(length), '\n')
+        except Exception as err:
+            print('\033[0;33m[QBR SOLVE ERROR] Ops, you did not scan in all 6 sides correctly.')
+            print('Please try again.\033[0m')
+            Die(1)
 
-            if self.humanize:
-                manual = normalize.algorithm(algorithm, self.language)
-                for index, text in enumerate(manual):
-                    print('{}. {}'.format(index+1, text))
+        print('-- SOLUTION --')
+        print('Starting position:\n    front: green\n    top: white\n')
+        print(algorithm, '({0} moves)'.format(length), '\n')
+
+        if self.humanize:
+            manual = normalize.algorithm(algorithm, self.language)
+            for index, text in enumerate(manual):
+                print('{}. {}'.format(index+1, text))
         Die(0)
 
 if __name__ == '__main__':

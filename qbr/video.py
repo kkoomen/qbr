@@ -3,7 +3,7 @@
 # Filename      : video.py
 # Author        : Kim K
 # Created       : Fri, 29 Jan 2016
-# Last Modified : Sat, 30 Jan 2016
+# Last Modified : Sun, 31 Jan 2016
 
 
 from sys import exit as Die
@@ -55,7 +55,7 @@ class Webcam:
     def draw_main_stickers(self, frame):
         """Draws the 9 stickers in the frame."""
         for x,y in self.stickers:
-            cv2.rectangle(frame, (x,y), (x+80, y+80), (255,255,255), 2)
+            cv2.rectangle(frame, (x,y), (x+30, y+30), (255,255,255), 2)
 
     def draw_current_stickers(self, frame, state):
         """Draws the 9 current stickers in the frame."""
@@ -108,25 +108,37 @@ class Webcam:
             _, frame = self.cam.read()
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
             key = cv2.waitKey(10) & 0xff
-            self.draw_main_stickers(frame)
 
+            # init certain stickers.
+            self.draw_main_stickers(frame)
             self.draw_preview_stickers(frame, preview)
 
             for index,(x,y) in enumerate(self.stickers):
-                roi          = hsv[y:y+80, x:x+80]
+                roi          = hsv[y:y+32, x:x+32]
                 avg_hsv      = ColorDetector.average_hsv(roi)
                 color_name   = ColorDetector.get_color_name(avg_hsv)
                 state[index] = color_name
+
+                # update when space bar is pressed.
                 if key == 32:
                     preview = list(state)
                     self.draw_preview_stickers(frame, state)
                     face = self.color_to_notation(state[4])
                     notation = [self.color_to_notation(color) for color in state]
                     sides[face] = notation
+
+            # show the new stickers
             self.draw_current_stickers(frame, state)
 
+            # append amount of scanned sides
+            text = 'scanned sides: {}/6'.format(len(sides))
+            cv2.putText(frame, text, (20, 460), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255,255,255), 1)
+
+            # quit on escape.
             if key == 27:
                 break
+
+            # show result
             cv2.imshow("default", frame)
 
         self.cam.release()

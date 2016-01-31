@@ -1,11 +1,15 @@
 # qbr.
-A rubik's cube solver written in python 3 using OpenCV.
+A rubik's cube solver written in python 3 using OpenCV using your webcam.
 
 NOTE: qbr uses color detection and color detection is insanely hard to fix for
-every possible situation, because certain light influences the color detector qbr uses.
+every possible situation, because certain light influences a color detector and the
+color scheme on a rubik's cube.
+The color detection in qbr is based on my color scheme which is a mid-bright scheme from
+the [Gans365](http://thecubicle.us/images/gans56b3.jpg) and in a room with normal day light.
 
 # Table of Contents
 - [Introduction](#introduction)
+- [Installation](#installation)
 - [Usage](#usage)
     - [Paramaters](#paramaters)
 - [License](#license)
@@ -20,9 +24,9 @@ who created robots that solve a rubik's cube in an ETA of 5 seconds and since 20
 That inspired me to create my own. I started using images only and eventually switched to webcam.
 
 One of the main things that killed me during developing this was color detection. It works for my
-room, but I bet it doesn't work for you, or you must have the same lighting.
+room, but I bet it doesn't work for you, or you must have the same lighting and color scheme as I do.
 
-# Usage
+# Installation
 ![demo](demo.png)
 
 Start off by cloning:
@@ -30,6 +34,8 @@ Start off by cloning:
 $ git clone https://github.com/muts/qbr.git
 $ cd qbr/qbr/
 ```
+
+# Usage
 
 Run qbr:
 
@@ -50,19 +56,21 @@ solve it if you've scanned it in correctly.
 
 You should now see a solution (or an error if you did it wrong).
 
-# paramaters
+# Paramaters
 
 You can use `-n` or `--normalize` to also output the solution in a "human-readable" format.
 
 For example:
-`R` will be: `Turn the right side a quarter turn away from you.`
+
+* `R` will be: `Turn the right side a quarter turn away from you.`
+* `F2` will be: `Turn the front face 180 degrees.`
 
 You can also specify a language by passing in `-l` or `--language`. Default language
 is set to `en`. The only language other then english that is available is dutch which
 is specified with `nl`.
 
 
-#### Example run:
+#### Test runs I've done:
 
 ```
 $ ./qbr.py
@@ -72,6 +80,37 @@ Starting position:
     top: white
 
 U2 R D2 L2 F2 L U2 L F' U L U R2 B2 U' F2 D2 R2 D2 R2 (20 moves)
+```
+
+```
+$ ./qbr.py -n
+-- SOLUTION --
+Starting position:
+    front: green
+    top: white
+
+    B2 U2 F' R U D' L' B' U L F U F2 R2 F2 D' F2 D R2 D2 (20 moves)
+
+    1. Turn the back side 180 degrees.
+    2. Turn the top layer 180 degrees.
+    3. Turn the front side a quarter turn to the left.
+    4. Turn the right side a quarter turn away from you.
+    5. Turn the top layer a quarter turn to the left.
+    6. Turn the bottom layer a quarter turn to the left.
+    7. Turn the left side a quarter turn away from you.
+    8. Turn the back side a quarter turn to the right.
+    9. Turn the top layer a quarter turn to the left.
+    10. Turn the left side a quarter turn towards you.
+    11. Turn the front side a quarter turn to the right.
+    12. Turn the top layer a quarter turn to the left.
+    13. Turn the front side 180 degrees.
+    14. Turn the right side 180 degrees.
+    15. Turn the front side 180 degrees.
+    16. Turn the bottom layer a quarter turn to the left.
+    17. Turn the front side 180 degrees.
+    18. Turn the bottom layer a quarter turn to the right.
+    19. Turn the right side 180 degrees.
+    20. Turn the bottom layer 180 degrees.
 ```
 
 
