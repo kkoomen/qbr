@@ -132,7 +132,7 @@ class Webcam:
 
             # append amount of scanned sides
             text = 'scanned sides: {}/6'.format(len(sides))
-            cv2.putText(frame, text, (20, 460), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255,255,255), 1)
+            cv2.putText(frame, text, (20, 460), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
 
             # quit on escape.
             if key == 27:
