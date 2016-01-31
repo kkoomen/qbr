@@ -61,7 +61,13 @@ immediately how the computer sees the colors.
 When pressing `space` a 3rd cube template updates below the one in the upper left corner.
 This is the state that is saved, so you know how qbr saved it.
 
-Two keybindings are available:
+* Amount of sides scanned
+
+This is not shown in the above demo image, but in the bottom left corner is shown
+the amount of sides scanned. This is so you know if you've scanned in all sides before
+pressing `esc`.
+
+### Keybindings:
 
 `space` for saving the current view
 
