@@ -16,6 +16,8 @@ the [Gans365](http://thecubicle.us/images/gans56b3.jpg) and in a room with norma
 
 
 # Introduction
+![demo](demo.png)
+
 The idea to create this came personally to mind when I started solving rubik's cubes.
 I solve on average a 3x3x3 rubik's cube in 14 seconds when warmed up. My personal record
 is 7.90 seconds, but there were already so many professional programmers around the world
@@ -27,8 +29,6 @@ One of the main things that killed me during developing this was color detection
 room, but I bet it doesn't work for you, or you must have the same lighting and color scheme as I do.
 
 # Installation
-![demo](demo.png)
-
 Start off by cloning:
 ```
 $ git clone https://github.com/muts/qbr.git
