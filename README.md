@@ -44,14 +44,30 @@ $ ./qbr.py
 ```
 
 This opens a webcam interface where you see basically the above photo.
-You have 3 things: 1) The 9 center squares. These are used for scanning in
-your cube colors. 2) the 9 stickers in the upper left corner. These will update
-immediately how the computer sees the colors. 3) when pressing `space` a 3rd
-cube template appears below the one in the upper left corner. This is the state
-that is saved, so you know how qbr saved it.
+You have 4 things:
 
-Two keybindings are available: `space` for saving the current view and `esc` for
-quit. Qbr checks if you have filled in all 6 sides when pressing `esc`. If so, it'll
+* The 9 center squares.
+
+These are used for scanning in
+your cube colors.
+
+* The 9 stickers in the upper left corner.
+
+These will update
+immediately how the computer sees the colors.
+
+* The seconds 9-sticker display below the one in the upper left corner.
+
+When pressing `space` a 3rd cube template updates below the one in the upper left corner.
+This is the state that is saved, so you know how qbr saved it.
+
+Two keybindings are available:
+
+`space` for saving the current view
+
+`esc` for quit.
+
+Qbr checks if you have filled in all 6 sides when pressing `esc`. If so, it'll
 solve it if you've scanned it in correctly.
 
 You should now see a solution (or an error if you did it wrong).
