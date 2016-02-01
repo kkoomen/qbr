@@ -3,7 +3,7 @@
 # Filename      : normalizer.py
 # Author        : Kim K
 # Created       : Sat, 30 Jan 2016
-# Last Modified : Sat, 30 Jan 2016
+# Last Modified : Mon, 01 Feb 2016
 
 
 from sys import exit as Die
@@ -17,7 +17,8 @@ except ImportError as err:
 class Normalizer:
 
     def algorithm(self, alg, language):
-        """TODO: Docstring for algorithm.
+        """ Noramlize an algorithm from the
+        json-written manual.
 
         :param alg: The algorithm itself
         :returns: list
