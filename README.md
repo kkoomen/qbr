@@ -31,7 +31,7 @@ room, but I bet it doesn't work for you, or you must have the same lighting and 
 # Installation
 Start off by cloning:
 ```
-$ git clone https://github.com/muts/qbr.git
+$ git clone https://github.com/kkoomen/qbr.git
 $ cd qbr/qbr/
 ```
 
