@@ -2,16 +2,18 @@
 A rubik's cube solver written in python 3 using OpenCV using your webcam.
 
 NOTE: qbr uses color detection and color detection is insanely hard to fix for
-every possible situation, because certain light influences a color detector and the
+every possible situation, because certain light influences a color detector, and the
 color scheme on a rubik's cube.
 The color detection in qbr is based on my color scheme which is a mid-bright scheme from
-the [Gans365](http://thecubicle.us/images/gans56b3.jpg) and in a room with normal day light.
+the [Gans365](http://thecubicle.us/images/gans56b3.jpg) and in a room with normal daylight.
 
 # Table of Contents
 - [Introduction](#introduction)
+- [Prerequisites](#prerequisites-relevant-only-when-using-pipenv)
 - [Installation](#installation)
+- [Pulling Dependencies](#pulling-dependencies)
 - [Usage](#usage)
-    - [Paramaters](#paramaters)
+    - [Parameters](#parameters)
 - [License](#license)
 
 
@@ -28,19 +30,55 @@ That inspired me to create my own. I started using images only and eventually sw
 One of the main things that killed me during developing this was color detection. It works for my
 room, but I bet it doesn't work for you, or you must have the same lighting and color scheme as I do.
 
+# Prerequisites (relevant only when using pipenv)
+You will need to install `pipenv` on your machine as well as have python 3.7 installed.
+#### Installing pipenv: ([Full Guide](https://pypi.org/project/pipenv/))
+```
+$ sudo apt install pipenv
+```
+
+NOTE: If you have (and need also) an earlier than 3.7 version of python installed, you might need to used [pyenv](https://github.com/pyenv/pyenv-installer) to manage multiple python versions on your machine.
+
 # Installation
-Start off by cloning:
+###Start off by cloning:
 ```
 $ git clone https://github.com/kkoomen/qbr.git
-$ cd qbr/qbr/
+$ cd qbr
+```
+
+# Pulling Dependencies
+###Manually installing deps:
+```
+$ pip install opencv-python
+$ pip install kociemba
+```
+
+###Using requirements.txt:
+```
+$ pip install -r requirements.txt
+```
+
+###If using pipenv (and making it virtual):
+```
+$ pipenv sync
 ```
 
 # Usage
+###Run qbr:
 
-Run qbr:
-
+####Running without a virtual-env (i.e. w/o pipenv)
 ```
-$ ./qbr.py
+$ python ./src/qbr.py
+```
+
+####Running with a virtual-env using pipenv
+```
+$ pipenv run ./src/qbr.py
+
+OR
+
+$ pipenv shell
+$ python ./src/qbr.py
 ```
 
 This opens a webcam interface where you see basically the above photo.
@@ -78,7 +116,7 @@ solve it if you've scanned it in correctly.
 
 You should now see a solution (or an error if you did it wrong).
 
-# Paramaters
+# Parameters
 
 You can use `-n` or `--normalize` to also output the solution in a "human-readable" format.
 
@@ -88,14 +126,14 @@ For example:
 * `F2` will be: `Turn the front face 180 degrees.`
 
 You can also specify a language by passing in `-l` or `--language`. Default language
-is set to `en`. The only language other then english that is available is dutch which
+is set to `en`. The only language other than english that is available is Dutch which
 is specified with `nl`.
 
 
-#### Test runs I've done:
+### Test runs I've done:
 
 ```
-$ ./qbr.py
+$ python ./src/qbr.py
 -- SOLUTION --
 Starting position:
     front: green
@@ -105,7 +143,7 @@ U2 R D2 L2 F2 L U2 L F' U L U R2 B2 U' F2 D2 R2 D2 R2 (20 moves)
 ```
 
 ```
-$ ./qbr.py -n
+$ python ./src/qbr.py -n
 -- SOLUTION --
 Starting position:
     front: green
