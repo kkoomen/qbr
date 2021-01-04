@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 kociemba = "*"
 opencv-python = "*"
+numpy = "*"
 
 [requires]
 python_version = "3.7"

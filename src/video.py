@@ -5,25 +5,33 @@
 # Created       : Fri, 29 Jan 2016
 # Last Modified : Sun, 31 Jan 2016
 
+# Built-ins
+from sys import exit as die
+from typing import List, Dict, Optional
 
-from sys import exit as Die
+# 3rd Party
 try:
-    import sys
-    import cv2
-    from colordetection import ColorDetector
+    import cv2                                  # type: ignore
+    from numpy import ndarray as np_ndarray     # type: ignore
 except ImportError as err:
-    Die(err)
+    np_ndarray = None
+    cv2 = None
+    die(err)
+
+# Internals
+from colordetection import color_detector
 
 
 class Webcam:
 
     def __init__(self):
-        self.cam              = cv2.VideoCapture(0)
-        self.stickers         = self.get_sticker_coordinates('main')
+        self.cam = cv2.VideoCapture(2)
+        self.stickers = self.get_sticker_coordinates('main')
         self.current_stickers = self.get_sticker_coordinates('current')
         self.preview_stickers = self.get_sticker_coordinates('preview')
 
-    def get_sticker_coordinates(self, name):
+    @staticmethod
+    def get_sticker_coordinates(name: str) -> List[List[int]]:
         """
         Every array has 2 values: x and y.
         Grouped per 3 since on the cam will be
@@ -51,23 +59,25 @@ class Webcam:
         }
         return stickers[name]
 
-
-    def draw_main_stickers(self, frame):
+    def draw_main_stickers(self, frame: np_ndarray) -> None:
         """Draws the 9 stickers in the frame."""
-        for x,y in self.stickers:
-            cv2.rectangle(frame, (x,y), (x+30, y+30), (255,255,255), 2)
+        for x, y in self.stickers:
+            cv2.rectangle(frame, (x, y), (x+30, y+30), (255, 255, 255), 2)
 
-    def draw_current_stickers(self, frame, state):
+    def draw_current_stickers(self, frame: np_ndarray, state: List[str]) -> None:
         """Draws the 9 current stickers in the frame."""
-        for index,(x,y) in enumerate(self.current_stickers):
-            cv2.rectangle(frame, (x,y), (x+32, y+32), ColorDetector.name_to_rgb(state[index]), -1)
+        for index, (x, y) in enumerate(self.current_stickers):
+            cv2.rectangle(frame, (x, y), (x+32, y+32),
+                          color_detector.name_to_rgb(state[index]), -1)
 
-    def draw_preview_stickers(self, frame, state):
+    def draw_preview_stickers(self, frame: np_ndarray, state: List[str]) -> None:
         """Draws the 9 preview stickers in the frame."""
-        for index,(x,y) in enumerate(self.preview_stickers):
-            cv2.rectangle(frame, (x,y), (x+32, y+32), ColorDetector.name_to_rgb(state[index]), -1)
+        for index, (x, y) in enumerate(self.preview_stickers):
+            cv2.rectangle(frame, (x, y), (x+32, y+32),
+                          color_detector.name_to_rgb(state[index]), -1)
 
-    def color_to_notation(self, color):
+    @staticmethod
+    def color_to_notation(color: str) -> str:
         """
         Return the notation from a specific color.
         We want a user to have green in front, white on top,
@@ -76,16 +86,16 @@ class Webcam:
         :param color: the requested color
         """
         notation = {
-            'green'  : 'F',
-            'white'  : 'U',
-            'blue'   : 'B',
-            'red'    : 'R',
-            'orange' : 'L',
-            'yellow' : 'D'
+            'green':    'F',
+            'white':    'U',
+            'blue':     'B',
+            'red':      'R',
+            'orange':   'L',
+            'yellow':   'D'
         }
         return notation[color]
 
-    def scan(self):
+    def scan(self) -> Optional[Dict[str, List[str]]]:
         """
         Open up the webcam and scans the 9 regions in the center
         and show a preview in the left upper corner.
@@ -97,13 +107,13 @@ class Webcam:
         :returns: dictionary
         """
 
-        sides   = {}
-        preview = ['white','white','white',
-                   'white','white','white',
-                   'white','white','white']
-        state   = [0,0,0,
-                   0,0,0,
-                   0,0,0]
+        sides = {}
+        preview = ['white', 'white', 'white',
+                   'white', 'white', 'white',
+                   'white', 'white', 'white']
+        state = ['', '', '',
+                 '', '', '',
+                 '', '', '']
         while True:
             _, frame = self.cam.read()
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -113,10 +123,10 @@ class Webcam:
             self.draw_main_stickers(frame)
             self.draw_preview_stickers(frame, preview)
 
-            for index,(x,y) in enumerate(self.stickers):
-                roi          = hsv[y:y+32, x:x+32]
-                avg_hsv      = ColorDetector.average_hsv(roi)
-                color_name   = ColorDetector.get_color_name(avg_hsv)
+            for index, (x, y) in enumerate(self.stickers):
+                roi = hsv[y:y+32, x:x+32]
+                avg_hsv = color_detector.average_hsv(roi)
+                color_name = color_detector.get_color_name(avg_hsv)
                 state[index] = color_name
 
                 # update when space bar is pressed.
@@ -143,6 +153,7 @@ class Webcam:
 
         self.cam.release()
         cv2.destroyAllWindows()
-        return sides if len(sides) == 6 else False
+        return sides if len(sides) == 6 else None
+
 
 webcam = Webcam()
