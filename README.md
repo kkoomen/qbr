@@ -31,8 +31,11 @@ One of the main things that killed me during developing this was color detection
 room, but I bet it doesn't work for you, or you must have the same lighting and color scheme as I do.
 
 # Prerequisites (relevant only when using pipenv)
+
 You will need to install `pipenv` on your machine as well as have python 3.7 installed.
+
 #### Installing pipenv: ([Full Guide](https://pypi.org/project/pipenv/))
+
 ```
 $ sudo apt install pipenv
 ```
@@ -40,38 +43,47 @@ $ sudo apt install pipenv
 NOTE: If you have (and need also) an earlier than 3.7 version of python installed, you might need to used [pyenv](https://github.com/pyenv/pyenv-installer) to manage multiple python versions on your machine.
 
 # Installation
-###Start off by cloning:
+
+### Start off by cloning:
+
 ```
 $ git clone https://github.com/kkoomen/qbr.git
 $ cd qbr
 ```
 
 # Pulling Dependencies
-###Manually installing deps:
+
+### Manually installing dependencies:
+
 ```
 $ pip install opencv-python
 $ pip install kociemba
 ```
 
-###Using requirements.txt:
+### Using requirements.txt:
+
 ```
 $ pip install -r requirements.txt
 ```
 
-###If using pipenv (and making it virtual):
+### If using pipenv (and making it virtual):
+
 ```
 $ pipenv sync
 ```
 
 # Usage
-###Run qbr:
 
-####Running without a virtual-env (i.e. w/o pipenv)
+### Run qbr:
+
+#### Running without a virtual-env (i.e. w/o pipenv)
+
 ```
 $ python ./src/qbr.py
 ```
 
-####Running with a virtual-env using pipenv
+#### Running with a virtual-env using pipenv
+
 ```
 $ pipenv run ./src/qbr.py
 
