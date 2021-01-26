@@ -9,6 +9,7 @@
 from sys import exit as Die
 try:
     import sys
+    import color_params
 except ImportError as err:
     Die(err)
 
@@ -21,20 +22,24 @@ class ColorDetection:
         """
         (h,s,v) = hsv
         #print((h,s,v))
-        if h < 15 and v < 100:
-            return 'red'
-        if h <= 10 and v > 100:
-            return 'orange'
-        elif h <= 30 and s <= 100:
+        if s <= color_params.sat_W and v >= color_params.val_W:
             return 'white'
-        elif h <= 40:
+        elif color_params.orange_L <= h < color_params.orange_H:
+            return 'orange'
+        elif color_params.orange_H <= h < color_params.yellow_H:
             return 'yellow'
-        elif h <= 85:
-            return 'green'
-        elif h <= 130:
-            return 'blue'
-
-        return 'white'
+        elif color_params.yellow_H <= h < color_params.green_H:
+            if s < 150:
+                return 'white' # green s is always higher
+            else:
+                return 'green'
+        elif color_params.green_H <= h < color_params.blue_H:
+            if s < 150:
+                return 'white' # blue s is always higher
+            else:
+                return 'blue'
+        else:
+            return 'red'
 
     def name_to_rgb(self, name):
         """
