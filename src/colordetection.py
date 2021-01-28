@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Filename      : colordetection.py
-# Author        : Kim K
-# Created       : Tue, 26 Jan 2016
-# Last Modified : Sun, 31 Jan 2016
+# vim: fenc=utf-8 ts=4 sw=4 et
 
 
-from sys import exit as Die
-try:
-    import sys
-except ImportError as err:
-    Die(err)
+import sys
 
 class ColorDetection:
 
@@ -20,7 +13,6 @@ class ColorDetection:
         :returns: string
         """
         (h,s,v) = hsv
-        #print((h,s,v))
         if h < 15 and v < 100:
             return 'red'
         if h <= 10 and v > 100:
