@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # vim: fenc=utf-8 ts=4 sw=4 et
 
+
 import color_params
 
 class ColorDetection:
