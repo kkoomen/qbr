@@ -5,6 +5,8 @@
 
 import cv2
 from colordetection import ColorDetector
+import numpy as np
+import math
 
 
 SCAN_STICKERS_AREA_TILE_SIZE = 30
@@ -107,6 +109,27 @@ class Webcam:
         }
         return notation[color]
 
+    def find_contours(self, frame):
+        contours, hierarchy = cv2.findContours(frame, cv2.RETR_TREE,  cv2.CHAIN_APPROX_SIMPLE)
+        finalContours = []
+        for contour in contours:
+            perimeter = cv2.arcLength(contour, True)
+            approx = cv2.approxPolyDP(contour, 0.05 * perimeter, True)
+            if len (approx) == 4:
+                area = cv2.contourArea(contour)
+                (x, y, w, h) = cv2.boundingRect(approx)
+                # Find aspect ratio of boundary rectangle around the countours
+                ratio = w / float(h)
+                # Check if contour is close to a square
+                if ratio > 0.9 and ratio < 1.1 and w > 30 and w < 90 and area/(w*h) > .4:
+                    finalContours.append((x,y,w,h))
+        return finalContours
+
+    def draw_contours(self, frame, contours):
+        for x, y, w, h in contours:
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (36,255,12), 2)
+
+
     def scan(self):
         """
         Open up the webcam and scans the 9 regions in the center
@@ -128,29 +151,38 @@ class Webcam:
                    0,0,0]
         while True:
             _, frame = self.cam.read()
-            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+            grayFrame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+            blurFrame = cv2.blur(grayFrame, (3,3))
+            cannyFrame = cv2.Canny(blurFrame, 40, 60, 3)
+
+            kernel = cv2.getStructuringElement(cv2.MORPH_OPEN, (5,5))
+            dilatedFrame = cv2.dilate(cannyFrame, kernel)
+            contours = self.find_contours(dilatedFrame)
+            self.draw_contours(frame, contours)
+
+            # hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
             key = cv2.waitKey(10) & 0xff
 
             # init certain stickers.
-            self.draw_main_stickers(frame)
-            self.draw_preview_stickers(frame, preview)
+            # self.draw_main_stickers(frame)
+            # self.draw_preview_stickers(frame, preview)
 
-            for index,(x,y) in enumerate(self.stickers):
-                roi          = hsv[y:y+32, x:x+32]
-                avg_hsv      = ColorDetector.average_hsv(roi)
-                color_name   = ColorDetector.get_color_name(avg_hsv)
-                state[index] = color_name
-
-                # update when space bar is pressed.
-                if key == 32:
-                    preview = list(state)
-                    self.draw_preview_stickers(frame, state)
-                    face = self.color_to_notation(state[4])
-                    notation = [self.color_to_notation(color) for color in state]
-                    sides[face] = notation
+            # for index,(x,y) in enumerate(self.stickers):
+            #     roi          = hsv[y:y+32, x:x+32]
+            #     avg_hsv      = ColorDetector.average_hsv(roi)
+            #     color_name   = ColorDetector.get_color_name(avg_hsv)
+            #     state[index] = color_name
+            #
+            #     # update when space bar is pressed.
+            #     if key == 32:
+            #         preview = list(state)
+            #         self.draw_preview_stickers(frame, state)
+            #         face = self.color_to_notation(state[4])
+            #         notation = [self.color_to_notation(color) for color in state]
+            #         sides[face] = notation
 
             # show the new stickers
-            self.draw_current_stickers(frame, state)
+            # self.draw_current_stickers(frame, state)
 
             # append amount of scanned sides
             text = 'scanned sides: {}/6'.format(len(sides))
@@ -162,6 +194,10 @@ class Webcam:
 
             # show result
             cv2.imshow("default", frame)
+            # cv2.imshow("gray", grayFrame)
+            # cv2.imshow("blur", blurFrame)
+            # cv2.imshow("canny", cannyFrame)
+            # cv2.imshow("dilated", dilatedFrame)
 
         self.cam.release()
         cv2.destroyAllWindows()
