@@ -32,7 +32,10 @@ room, but I bet it doesn't work for you, or you must have the same lighting and 
 Start off by cloning:
 ```
 $ git clone https://github.com/kkoomen/qbr.git
-$ cd qbr/qbr/
+$ cd qbr
+$ python3 -m venv env
+$ source ./env/bin/activate
+$ pip3 install requirements.txt
 ```
 
 # Usage

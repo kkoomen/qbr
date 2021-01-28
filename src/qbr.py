@@ -1,22 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Filename      : qbr.py
-# Author        : Kim K
-# Created       : Tue, 26 Jan 2016
-# Last Modified : Sun, 31 Jan 2016
+# vim: fenc=utf-8 ts=4 sw=4 et
 
 
-from sys import exit as Die
-try:
-    import sys
-    import kociemba
-    import argparse
-
-    from combiner import combine
-    from video import webcam
-    from normalizer import normalize
-except ImportError as err:
-    Die(err)
+import sys
+import kociemba
+import argparse
+from combiner import combine
+from video import webcam
+from normalizer import normalize
 
 
 class Qbr:
@@ -26,7 +18,7 @@ class Qbr:
         self.language = (language[0]) if isinstance(language, list) else language
 
     def run(self):
-        state         = webcam.scan()
+        state = webcam.scan()
         if not state:
             print('\033[0;33m[QBR SCAN ERROR] Ops, you did not scan in all 6 sides.')
             print('Please try again.\033[0m')
@@ -34,8 +26,8 @@ class Qbr:
 
         unsolvedState = combine.sides(state)
         try:
-            algorithm     = kociemba.solve(unsolvedState)
-            length        = len(algorithm.split(' '))
+            algorithm = kociemba.solve(unsolvedState)
+            length = len(algorithm.split(' '))
         except Exception as err:
             print('\033[0;33m[QBR SOLVE ERROR] Ops, you did not scan in all 6 sides correctly.')
             print('Please try again.\033[0m')
