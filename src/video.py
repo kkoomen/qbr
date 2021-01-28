@@ -139,7 +139,6 @@ class Webcam:
         for x, y, w, h in contours:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (36, 255, 12), 2)
 
-
     def scan(self):
         """
         Open up the webcam and scans the 9 regions in the center
