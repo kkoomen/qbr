@@ -114,14 +114,14 @@ class Webcam:
         finalContours = []
         for contour in contours:
             perimeter = cv2.arcLength(contour, True)
-            approx = cv2.approxPolyDP(contour, 0.05 * perimeter, True)
+            approx = cv2.approxPolyDP(contour, 0.06 * perimeter, True)
             if len (approx) == 4:
                 area = cv2.contourArea(contour)
                 (x, y, w, h) = cv2.boundingRect(approx)
                 # Find aspect ratio of boundary rectangle around the countours
                 ratio = w / float(h)
                 # Check if contour is close to a square
-                if ratio > 0.9 and ratio < 1.1 and w > 30 and w < 90 and area/(w*h) > .4:
+                if ratio > 0.8 and ratio < 1.2 and w > 30 and w < 60 and area/(w*h) > 0.4:
                     finalContours.append((x,y,w,h))
         return finalContours
 
@@ -152,10 +152,10 @@ class Webcam:
         while True:
             _, frame = self.cam.read()
             grayFrame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-            blurFrame = cv2.blur(grayFrame, (3,3))
-            cannyFrame = cv2.Canny(blurFrame, 40, 60, 3)
+            blurFrame = cv2.blur(grayFrame, (4, 4))
+            cannyFrame = cv2.Canny(blurFrame, 30, 50, 3)
 
-            kernel = cv2.getStructuringElement(cv2.MORPH_OPEN, (5,5))
+            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7,7))
             dilatedFrame = cv2.dilate(cannyFrame, kernel)
             contours = self.find_contours(dilatedFrame)
             self.draw_contours(frame, contours)
@@ -194,10 +194,7 @@ class Webcam:
 
             # show result
             cv2.imshow("default", frame)
-            # cv2.imshow("gray", grayFrame)
-            # cv2.imshow("blur", blurFrame)
-            # cv2.imshow("canny", cannyFrame)
-            # cv2.imshow("dilated", dilatedFrame)
+            cv2.imshow("dilated", dilatedFrame)
 
         self.cam.release()
         cv2.destroyAllWindows()
