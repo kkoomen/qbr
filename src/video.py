@@ -60,21 +60,21 @@ class Webcam:
 
     def draw_main_stickers(self, frame):
         """Draws the 9 stickers in the frame."""
-        for x,y in self.stickers:
+        for x, y in self.stickers:
             cv2.rectangle(
                 frame,
-                (x,y),
+                (x, y),
                 (x+SCAN_STICKERS_AREA_TILE_SIZE, y+SCAN_STICKERS_AREA_TILE_SIZE),
-                (255,255,255),
+                (255, 255, 255),
                 2
             )
 
     def draw_current_stickers(self, frame, state):
         """Draws the 9 current stickers in the frame."""
-        for index,(x,y) in enumerate(self.current_stickers):
+        for index, (x, y) in enumerate(self.current_stickers):
             cv2.rectangle(
                 frame,
-                (x,y),
+                (x, y),
                 (x+CURRENT_STICKER_STATE_TILE_SIZE, y+CURRENT_STICKER_STATE_TILE_SIZE),
                 ColorDetector.name_to_rgb(state[index]),
                 -1
@@ -82,10 +82,10 @@ class Webcam:
 
     def draw_preview_stickers(self, frame, state):
         """Draws the 9 preview stickers in the frame."""
-        for index,(x,y) in enumerate(self.preview_stickers):
+        for index, (x, y) in enumerate(self.preview_stickers):
             cv2.rectangle(
                 frame,
-                (x,y),
+                (x, y),
                 (x+PREVIEW_STICKER_STATE_TILE_SIZE, y+PREVIEW_STICKER_STATE_TILE_SIZE),
                 ColorDetector.name_to_rgb(state[index]),
                 -1
@@ -110,7 +110,7 @@ class Webcam:
         return notation[color]
 
     def find_contours(self, frame):
-        contours, hierarchy = cv2.findContours(frame, cv2.RETR_TREE,  cv2.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv2.findContours(frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         finalContours = []
         for contour in contours:
             perimeter = cv2.arcLength(contour, True)
@@ -121,13 +121,23 @@ class Webcam:
                 # Find aspect ratio of boundary rectangle around the countours
                 ratio = w / float(h)
                 # Check if contour is close to a square
-                if ratio > 0.8 and ratio < 1.2 and w > 30 and w < 60 and area/(w*h) > 0.4:
-                    finalContours.append((x,y,w,h))
+                if ratio > 0.8 and ratio < 1.2 and w > 30 and w < 60 and area / (w * h) > 0.4:
+                    finalContours.append((x, y, w, h))
+
+        # Remove those than have not that much neighbours.
+        for contour in finalContours:
+            neighbors = 0
+            (x, y, w, h) = contour
+            for (x2, y2, w2, h2) in finalContours:
+                if abs(x - x2) < (w * 3.5) and abs(y - y2) < (h * 3.5):
+                    neighbors +=1
+            if neighbors < 6:
+                finalContours.remove(contour)
         return finalContours
 
     def draw_contours(self, frame, contours):
         for x, y, w, h in contours:
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (36,255,12), 2)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (36, 255, 12), 2)
 
 
     def scan(self):
@@ -143,19 +153,19 @@ class Webcam:
         """
 
         sides   = {}
-        preview = ['white','white','white',
-                   'white','white','white',
-                   'white','white','white']
-        state   = [0,0,0,
-                   0,0,0,
-                   0,0,0]
+        preview = ['white', 'white', 'white',
+                   'white', 'white', 'white',
+                   'white', 'white', 'white']
+        state   = [0, 0, 0,
+                   0, 0, 0,
+                   0, 0, 0]
         while True:
             _, frame = self.cam.read()
             grayFrame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-            blurFrame = cv2.blur(grayFrame, (4, 4))
-            cannyFrame = cv2.Canny(blurFrame, 30, 50, 3)
+            blurFrame = cv2.blur(grayFrame, (5, 5))
+            cannyFrame = cv2.Canny(blurFrame, 30, 60, 3)
 
-            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7,7))
+            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
             dilatedFrame = cv2.dilate(cannyFrame, kernel)
             contours = self.find_contours(dilatedFrame)
             self.draw_contours(frame, contours)
@@ -167,7 +177,7 @@ class Webcam:
             # self.draw_main_stickers(frame)
             # self.draw_preview_stickers(frame, preview)
 
-            # for index,(x,y) in enumerate(self.stickers):
+            # for index, (x, y) in enumerate(self.stickers):
             #     roi          = hsv[y:y+32, x:x+32]
             #     avg_hsv      = ColorDetector.average_hsv(roi)
             #     color_name   = ColorDetector.get_color_name(avg_hsv)
@@ -186,7 +196,7 @@ class Webcam:
 
             # append amount of scanned sides
             text = 'scanned sides: {}/6'.format(len(sides))
-            cv2.putText(frame, text, (20, self.height - 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+            cv2.putText(frame, text, (20, self.height - 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
 
             # quit on escape.
             if key == 27:
