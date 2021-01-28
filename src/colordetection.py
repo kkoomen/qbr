@@ -1,17 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Filename      : colordetection.py
-# Author        : Kim K
-# Created       : Tue, 26 Jan 2016
-# Last Modified : Sun, 31 Jan 2016
+# vim: fenc=utf-8 ts=4 sw=4 et
 
-
-from sys import exit as Die
-try:
-    import sys
-    import color_params
-except ImportError as err:
-    Die(err)
+import color_params
 
 class ColorDetection:
 
@@ -21,7 +12,7 @@ class ColorDetection:
         :returns: string
         """
         (h,s,v) = hsv
-        #print((h,s,v))
+
         if s <= color_params.sat_W and v >= color_params.val_W:
             return 'white'
         elif color_params.orange_L <= h < color_params.orange_H:

@@ -6,7 +6,7 @@
 
 # white-filter
 sat_W = 60  # hsv-pixels with a saturation s > sat_W are considered not to be a white facelet-pixel
-val_W = 150 # hsv-pixels with a saturation v < sat_W are considered not to be a white facelet-pixel
+val_W = 150 # hsv-pixels with a value v < sat_W are considered not to be a white facelet-pixel
 
 # These parameters depend on the actually used cube colors and lightning conditions
 orange_L = 6    # lowest hue for the color orange

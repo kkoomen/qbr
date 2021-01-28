@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Filename      : video.py
-# Author        : Kim K
-# Created       : Fri, 29 Jan 2016
-# Last Modified : Sun, 31 Jan 2016
+# vim: fenc=utf-8 ts=4 sw=4 et
 
 
-from sys import exit as Die
-try:
-    import sys
-    import cv2
-    from colordetection import ColorDetector
-except ImportError as err:
-    Die(err)
+import cv2
+from colordetection import ColorDetector
+
+
+SCAN_STICKERS_AREA_TILE_SIZE = 30
+CURRENT_STICKER_STATE_TILE_SIZE = 32
+PREVIEW_STICKER_STATE_TILE_SIZE = 32
 
 
 class Webcam:
@@ -22,6 +19,12 @@ class Webcam:
         self.stickers         = self.get_sticker_coordinates('main')
         self.current_stickers = self.get_sticker_coordinates('current')
         self.preview_stickers = self.get_sticker_coordinates('preview')
+
+        self.cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        self.width  = int(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.height = int(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
 
     def get_sticker_coordinates(self, name):
         """
@@ -49,23 +52,42 @@ class Webcam:
                 [20, 198], [54, 198], [88, 198]
             ]
         }
+
         return stickers[name]
 
 
     def draw_main_stickers(self, frame):
         """Draws the 9 stickers in the frame."""
         for x,y in self.stickers:
-            cv2.rectangle(frame, (x,y), (x+30, y+30), (255,255,255), 2)
+            cv2.rectangle(
+                frame,
+                (x,y),
+                (x+SCAN_STICKERS_AREA_TILE_SIZE, y+SCAN_STICKERS_AREA_TILE_SIZE),
+                (255,255,255),
+                2
+            )
 
     def draw_current_stickers(self, frame, state):
         """Draws the 9 current stickers in the frame."""
         for index,(x,y) in enumerate(self.current_stickers):
-            cv2.rectangle(frame, (x,y), (x+32, y+32), ColorDetector.name_to_rgb(state[index]), -1)
+            cv2.rectangle(
+                frame,
+                (x,y),
+                (x+CURRENT_STICKER_STATE_TILE_SIZE, y+CURRENT_STICKER_STATE_TILE_SIZE),
+                ColorDetector.name_to_rgb(state[index]),
+                -1
+            )
 
     def draw_preview_stickers(self, frame, state):
         """Draws the 9 preview stickers in the frame."""
         for index,(x,y) in enumerate(self.preview_stickers):
-            cv2.rectangle(frame, (x,y), (x+32, y+32), ColorDetector.name_to_rgb(state[index]), -1)
+            cv2.rectangle(
+                frame,
+                (x,y),
+                (x+PREVIEW_STICKER_STATE_TILE_SIZE, y+PREVIEW_STICKER_STATE_TILE_SIZE),
+                ColorDetector.name_to_rgb(state[index]),
+                -1
+            )
 
     def color_to_notation(self, color):
         """
@@ -132,7 +154,7 @@ class Webcam:
 
             # append amount of scanned sides
             text = 'scanned sides: {}/6'.format(len(sides))
-            cv2.putText(frame, text, (20, 460), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
+            cv2.putText(frame, text, (20, self.height - 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255,255,255), 1, cv2.LINE_AA)
 
             # quit on escape.
             if key == 27:

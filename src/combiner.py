@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Filename      : combiner.py
-# Author        : Kim K
-# Created       : Tue, 26 Jan 2016
-# Last Modified : Sat, 30 Jan 2016
+# vim: fenc=utf-8 ts=4 sw=4 et
 
 
 class Combine:

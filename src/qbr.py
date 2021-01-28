@@ -1,22 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Filename      : qbr.py
-# Author        : Kim K
-# Created       : Tue, 26 Jan 2016
-# Last Modified : Sun, 31 Jan 2016
+# vim: fenc=utf-8 ts=4 sw=4 et
 
 
-from sys import exit as Die
-try:
-    import sys
-    import kociemba
-    import argparse
-
-    from combiner import combine
-    from video import webcam
-    from normalizer import normalize
-except ImportError as err:
-    Die(err)
+import sys
+import kociemba
+import argparse
+from combiner import combine
+from video import webcam
+from normalizer import normalize
 
 
 class Qbr:
@@ -26,20 +18,20 @@ class Qbr:
         self.language = (language[0]) if isinstance(language, list) else language
 
     def run(self):
-        state         = webcam.scan()
+        state = webcam.scan()
         if not state:
             print('\033[0;33m[QBR SCAN ERROR] Ops, you did not scan in all 6 sides.')
             print('Please try again.\033[0m')
-            Die(1)
+            sys.exit(1)
 
         unsolvedState = combine.sides(state)
         try:
-            algorithm     = kociemba.solve(unsolvedState)
-            length        = len(algorithm.split(' '))
-        except Exception as err:
+            algorithm = kociemba.solve(unsolvedState)
+            length = len(algorithm.split(' '))
+        except Exception:
             print('\033[0;33m[QBR SOLVE ERROR] Ops, you did not scan in all 6 sides correctly.')
             print('Please try again.\033[0m')
-            Die(1)
+            sys.exit(1)
 
         print('-- SOLUTION --')
         print('Starting position:\n    front: green\n    top: white\n')
@@ -49,7 +41,6 @@ class Qbr:
             manual = normalize.algorithm(algorithm, self.language)
             for index, text in enumerate(manual):
                 print('{}. {}'.format(index+1, text))
-        Die(0)
 
 if __name__ == '__main__':
     # define argument parser.

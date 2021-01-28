@@ -1,17 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Filename      : normalizer.py
-# Author        : Kim K
-# Created       : Sat, 30 Jan 2016
-# Last Modified : Mon, 01 Feb 2016
+# vim: fenc=utf-8 ts=4 sw=4 et
 
 
-from sys import exit as Die
-try:
-    import sys
-    import json
-except ImportError as err:
-    Die(err)
+import json
 
 
 class Normalizer:
