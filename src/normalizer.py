@@ -3,7 +3,6 @@
 # vim: fenc=utf-8 ts=4 sw=4 et
 
 
-import sys
 import json
 
 
