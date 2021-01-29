@@ -114,7 +114,7 @@ class Webcam:
         finalContours = []
         for contour in contours:
             perimeter = cv2.arcLength(contour, True)
-            approx = cv2.approxPolyDP(contour, 0.06 * perimeter, True)
+            approx = cv2.approxPolyDP(contour, 0.1 * perimeter, True)
             if len (approx) == 4:
                 area = cv2.contourArea(contour)
                 (x, y, w, h) = cv2.boundingRect(approx)
@@ -131,9 +131,11 @@ class Webcam:
             for (x2, y2, w2, h2) in finalContours:
                 if abs(x - x2) < (w * 3.5) and abs(y - y2) < (h * 3.5):
                     neighbors +=1
-            if neighbors < 6:
+            if neighbors < 5:
                 finalContours.remove(contour)
-        return finalContours
+
+        # Only return the first 9 contours.
+        return finalContours[:9]
 
     def draw_contours(self, frame, contours):
         for x, y, w, h in contours:
@@ -161,10 +163,11 @@ class Webcam:
         while True:
             _, frame = self.cam.read()
             grayFrame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-            blurFrame = cv2.blur(grayFrame, (5, 5))
-            cannyFrame = cv2.Canny(blurFrame, 30, 60, 3)
+            denoisedFrame = cv2.fastNlMeansDenoising(grayFrame, None, 10, 7, 7)
+            blurredFrame = cv2.blur(denoisedFrame, (5, 5))
+            cannyFrame = cv2.Canny(blurredFrame, 30, 60, 3)
 
-            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
+            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
             dilatedFrame = cv2.dilate(cannyFrame, kernel)
             contours = self.find_contours(dilatedFrame)
             self.draw_contours(frame, contours)
@@ -202,8 +205,11 @@ class Webcam:
                 break
 
             # show result
-            cv2.imshow("default", frame)
-            cv2.imshow("dilated", dilatedFrame)
+            cv2.imshow('default', frame)
+            # cv2.imshow('denoised', denoisedFrame)
+            # cv2.imshow('gray', grayFrame)
+            # cv2.imshow('blur', blurredFrame)
+            cv2.imshow('dilated', dilatedFrame)
 
         self.cam.release()
         cv2.destroyAllWindows()
