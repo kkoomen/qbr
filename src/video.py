@@ -118,9 +118,9 @@ class Webcam:
             if len (approx) == 4:
                 area = cv2.contourArea(contour)
                 (x, y, w, h) = cv2.boundingRect(approx)
-                # Find aspect ratio of boundary rectangle around the countours
+                # Find aspect ratio of boundary rectangle around the countours.
                 ratio = w / float(h)
-                # Check if contour is close to a square
+                # Check if contour is close to a square.
                 if ratio > 0.8 and ratio < 1.2 and w > 30 and w < 60 and area / (w * h) > 0.4:
                     finalContours.append((x, y, w, h))
 
@@ -138,8 +138,9 @@ class Webcam:
         return finalContours[:9]
 
     def draw_contours(self, frame, contours):
-        for x, y, w, h in contours:
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (36, 255, 12), 2)
+        if len(contours) == 9:
+            for x, y, w, h in contours:
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (36, 255, 12), 2)
 
     def scan(self):
         """
