@@ -58,7 +58,7 @@ There have 3 things:
 
 ### The first 9-stickers in the upper left corner
 
-These will update immediately and display how the computer detects the colors.
+These will update immediately and display how the program has detected the colors.
 
 ### The second 9-sticker display below the one in the upper left corner
 
