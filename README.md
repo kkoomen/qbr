@@ -9,6 +9,9 @@ A rubik's cube solver written in python 3 using OpenCV via your webcam.
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
+    + [The first 9-stickers in the upper left corner](#the-first-9-stickers-in-the-upper-left-corner)
+    + [The second 9-sticker display below the one in the upper left corner](#the-second-9-sticker-display-below-the-one-in-the-upper-left-corner)
+    + [Amount of sides scanned](#amount-of-sides-scanned)
 - [Getting the solution](#getting-the-solution)
     + [Keybindings:](#keybindings)
 - [Paramaters](#paramaters)
@@ -51,24 +54,19 @@ $ ./src/qbr.py
 
 This opens a webcam interface where you see basically the above photo.
 
-There have 4 things:
+There have 3 things:
 
-* The 9 center squares.
-
-These are used for scanning in
-your cube colors.
-
-* The first 9-stickers in the upper left corner.
+### The first 9-stickers in the upper left corner
 
 These will update immediately and display how the computer detects the colors.
 
-* The second 9-sticker display below the one in the upper left corner.
+### The second 9-sticker display below the one in the upper left corner
 
 When pressing `SPACE` it will update this state in order to show you what state
 it has saved. You can press space as many times as you'd like if it has been
 detected wrong.
 
-* Amount of sides scanned
+### Amount of sides scanned
 
 In the bottom left corner is shown the amount of sides scanned. This is so you
 know if you've scanned in all sides before pressing `ESC`.
