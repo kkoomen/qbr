@@ -3,6 +3,8 @@
 # vim: fenc=utf-8 ts=4 sw=4 et
 
 
+import numpy as np
+import cv2
 
 class ColorDetection:
 
@@ -44,28 +46,22 @@ class ColorDetection:
         }
         return color[name]
 
-    def average_hsv(self, roi):
-        """ Average the HSV colors in a region of interest.
+    def get_dominant_rgb_color(self, roi):
+        """ Get dominant RGB from a certain region of interest.
 
         :param roi: the image array
         :returns: tuple
         """
-        h   = 0
-        s   = 0
-        v   = 0
-        num = 0
-        for y in range(len(roi)):
-            if y % 10 == 0:
-                for x in range(len(roi[y])):
-                    if x % 10 == 0:
-                        chunk = roi[y][x]
-                        num += 1
-                        h += chunk[0]
-                        s += chunk[1]
-                        v += chunk[2]
-        h /= num
-        s /= num
-        v /= num
-        return (int(h), int(s), int(v))
+        average = roi.mean(axis=0).mean(axis=0)
+        pixels = np.float32(roi.reshape(-1, 3))
+
+        n_colors = 5
+        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 200, .1)
+        flags = cv2.KMEANS_RANDOM_CENTERS
+        _, labels, palette = cv2.kmeans(pixels, n_colors, None, criteria, 10, flags)
+        _, counts = np.unique(labels, return_counts=True)
+        dominant = palette[np.argmax(counts)]
+        color = tuple([int(c) for c in dominant])
+        return color
 
 ColorDetector = ColorDetection()

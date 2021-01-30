@@ -10,7 +10,6 @@ import math
 
 
 SCAN_STICKERS_AREA_TILE_SIZE = 30
-CURRENT_STICKER_STATE_TILE_SIZE = 32
 PREVIEW_STICKER_STATE_TILE_SIZE = 32
 
 
@@ -18,7 +17,6 @@ class Webcam:
 
     def __init__(self):
         self.cam              = cv2.VideoCapture(0)
-        self.stickers         = self.get_sticker_coordinates('main')
         self.current_stickers = self.get_sticker_coordinates('current')
         self.preview_stickers = self.get_sticker_coordinates('preview')
 
@@ -39,9 +37,9 @@ class Webcam:
         """
         stickers = {
             'main': [
-                [200, 120], [300, 120], [400, 120],
-                [200, 220], [300, 220], [400, 220],
-                [200, 320], [300, 320], [400, 320]
+                # [200, 120], [300, 120], [400, 120],
+                # [200, 220], [300, 220], [400, 220],
+                # [200, 320], [300, 320], [400, 320]
             ],
             'current': [
                 [20, 20], [54, 20], [88, 20],
@@ -54,40 +52,17 @@ class Webcam:
                 [20, 198], [54, 198], [88, 198]
             ]
         }
-
         return stickers[name]
 
 
-    def draw_main_stickers(self, frame):
-        """Draws the 9 stickers in the frame."""
-        for x, y in self.stickers:
-            cv2.rectangle(
-                frame,
-                (x, y),
-                (x+SCAN_STICKERS_AREA_TILE_SIZE, y+SCAN_STICKERS_AREA_TILE_SIZE),
-                (255, 255, 255),
-                2
-            )
-
-    def draw_current_stickers(self, frame, state):
+    def draw_stickers(self, stickers, frame, state):
         """Draws the 9 current stickers in the frame."""
-        for index, (x, y) in enumerate(self.current_stickers):
-            cv2.rectangle(
-                frame,
-                (x, y),
-                (x+CURRENT_STICKER_STATE_TILE_SIZE, y+CURRENT_STICKER_STATE_TILE_SIZE),
-                ColorDetector.name_to_rgb(state[index]),
-                -1
-            )
-
-    def draw_preview_stickers(self, frame, state):
-        """Draws the 9 preview stickers in the frame."""
-        for index, (x, y) in enumerate(self.preview_stickers):
+        for index, (x, y) in enumerate(stickers):
             cv2.rectangle(
                 frame,
                 (x, y),
                 (x+PREVIEW_STICKER_STATE_TILE_SIZE, y+PREVIEW_STICKER_STATE_TILE_SIZE),
-                ColorDetector.name_to_rgb(state[index]),
+                state[index],
                 -1
             )
 
@@ -134,13 +109,31 @@ class Webcam:
             if neighbors < 5:
                 finalContours.remove(contour)
 
-        # Only return the first 9 contours.
-        return finalContours[:9]
+        # Sort contours on the y-value first.
+        ySorted = sorted(finalContours[:9], key=lambda item: item[1])
+
+        # Split into 3 rows and sort each row on the x-value.
+        top_row = sorted(ySorted[0:3], key=lambda item: item[0])
+        middle_row = sorted(ySorted[3:6], key=lambda item: item[0])
+        bottom_row = sorted(ySorted[6:9], key=lambda item: item[0])
+
+        sortedContours = top_row + middle_row + bottom_row
+        return sortedContours
 
     def draw_contours(self, frame, contours):
         if len(contours) == 9:
-            for x, y, w, h in contours:
+            for index, (x, y, w, h) in enumerate(contours):
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (36, 255, 12), 2)
+                cv2.putText(
+                    frame,
+                    '#{}'.format(index + 1),
+                    (int(x + (w / 4)), int(y + h / 2)),
+                    cv2.FONT_HERSHEY_TRIPLEX,
+                    0.5,
+                    (255, 255, 255),
+                    1,
+                    cv2.LINE_AA
+                )
 
     def scan(self):
         """
@@ -154,15 +147,22 @@ class Webcam:
         :returns: dictionary
         """
 
-        sides   = {}
-        preview = ['white', 'white', 'white',
-                   'white', 'white', 'white',
-                   'white', 'white', 'white']
-        state   = [0, 0, 0,
-                   0, 0, 0,
-                   0, 0, 0]
+        sides   = []
+        preview = [(0,0,0), (0,0,0), (0,0,0),
+                   (0,0,0), (0,0,0), (0,0,0),
+                   (0,0,0), (0,0,0), (0,0,0)]
+        state   = [(0,0,0), (0,0,0), (0,0,0),
+                   (0,0,0), (0,0,0), (0,0,0),
+                   (0,0,0), (0,0,0), (0,0,0)]
         while True:
+            key = cv2.waitKey(10) & 0xff
+
+            # Quit on escape.
+            if key == 27:
+                break
+
             _, frame = self.cam.read()
+            # labFrame = cv2.cvtColor(frame, cv2.COLOR_RGB2LAB)
             grayFrame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
             denoisedFrame = cv2.fastNlMeansDenoising(grayFrame, None, 10, 7, 7)
             blurredFrame = cv2.blur(denoisedFrame, (5, 5))
@@ -170,50 +170,44 @@ class Webcam:
 
             kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
             dilatedFrame = cv2.dilate(cannyFrame, kernel)
+
             contours = self.find_contours(dilatedFrame)
             self.draw_contours(frame, contours)
 
-            # hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-            key = cv2.waitKey(10) & 0xff
+            for index, (x, y, w, h) in enumerate(contours):
+                roi = frame[y+10:y+h-10, x+10:x+w-10]
+                avg_rgb = ColorDetector.get_dominant_rgb_color(roi)
+                state[index] = avg_rgb
 
-            # init certain stickers.
-            # self.draw_main_stickers(frame)
-            # self.draw_preview_stickers(frame, preview)
+            # Update the snapshot preview when space bar is pressed.
+            if key == 32:
+                preview = list(state)
+                sides.append(state)
+                self.draw_stickers(self.preview_stickers, frame, preview)
+                if len(sides) == 6:
+                    break
 
-            # for index, (x, y) in enumerate(self.stickers):
-            #     roi          = hsv[y:y+32, x:x+32]
-            #     avg_hsv      = ColorDetector.average_hsv(roi)
-            #     color_name   = ColorDetector.get_color_name(avg_hsv)
-            #     state[index] = color_name
-            #
-            #     # update when space bar is pressed.
-            #     if key == 32:
-            #         preview = list(state)
-            #         self.draw_preview_stickers(frame, state)
-            #         face = self.color_to_notation(state[4])
-            #         notation = [self.color_to_notation(color) for color in state]
-            #         sides[face] = notation
+            self.draw_stickers(self.current_stickers, frame, state)
+            self.draw_stickers(self.preview_stickers, frame, preview)
 
-            # show the new stickers
-            # self.draw_current_stickers(frame, state)
-
-            # append amount of scanned sides
+            # Dislay amount of scanned sides.
             text = 'scanned sides: {}/6'.format(len(sides))
-            cv2.putText(frame, text, (20, self.height - 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+            cv2.putText(frame,
+                        text,
+                        (20, self.height - 20),
+                        cv2.FONT_HERSHEY_TRIPLEX,
+                        0.5,
+                        (255, 255, 255),
+                        1,
+                        cv2.LINE_AA)
 
-            # quit on escape.
-            if key == 27:
-                break
-
-            # show result
+            # Show the result.
             cv2.imshow('default', frame)
-            # cv2.imshow('denoised', denoisedFrame)
-            # cv2.imshow('gray', grayFrame)
-            # cv2.imshow('blur', blurredFrame)
-            cv2.imshow('dilated', dilatedFrame)
 
         self.cam.release()
         cv2.destroyAllWindows()
+
+        # TODO: convert rgb to color names.
         return sides if len(sides) == 6 else False
 
 webcam = Webcam()
