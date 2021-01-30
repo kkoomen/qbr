@@ -8,10 +8,8 @@ from colordetection import ColorDetector
 import numpy as np
 import math
 
-
 SCAN_STICKERS_AREA_TILE_SIZE = 30
 PREVIEW_STICKER_STATE_TILE_SIZE = 32
-
 
 class Webcam:
 
@@ -25,22 +23,17 @@ class Webcam:
         self.width  = int(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-
-    def get_sticker_coordinates(self, name):
+    def get_sticker_coordinates(self, group):
         """
-        Every array has 2 values: x and y.
-        Grouped per 3 since on the cam will be
-        3 rows of 3 stickers.
+        Get sticker coordinates from a specific group.
+        These coordinates are the state previews in the top left corner.
 
-        :param name: the requested color type
+        Every array has 2 values: x and y.
+
+        :param group: The requested color type coordinates.
         :returns: list
         """
         stickers = {
-            'main': [
-                # [200, 120], [300, 120], [400, 120],
-                # [200, 220], [300, 220], [400, 220],
-                # [200, 320], [300, 320], [400, 320]
-            ],
             'current': [
                 [20, 20], [54, 20], [88, 20],
                 [20, 54], [54, 54], [88, 54],
@@ -52,7 +45,7 @@ class Webcam:
                 [20, 198], [54, 198], [88, 198]
             ]
         }
-        return stickers[name]
+        return stickers[group]
 
 
     def draw_stickers(self, stickers, frame, state):
@@ -62,31 +55,14 @@ class Webcam:
                 frame,
                 (x, y),
                 (x+PREVIEW_STICKER_STATE_TILE_SIZE, y+PREVIEW_STICKER_STATE_TILE_SIZE),
-                state[index],
+                tuple([int(c) for c in state[index]]),
                 -1
             )
 
-    def color_to_notation(self, color):
-        """
-        Return the notation from a specific color.
-        We want a user to have green in front, white on top,
-        which is the usual.
-
-        :param color: the requested color
-        """
-        notation = {
-            'green'  : 'F',
-            'white'  : 'U',
-            'blue'   : 'B',
-            'red'    : 'R',
-            'orange' : 'L',
-            'yellow' : 'D'
-        }
-        return notation[color]
-
     def find_contours(self, frame):
+        """Finds the contours of the 3x3."""
         contours, hierarchy = cv2.findContours(frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        finalContours = []
+        final_contours = []
         for contour in contours:
             perimeter = cv2.arcLength(contour, True)
             approx = cv2.approxPolyDP(contour, 0.1 * perimeter, True)
@@ -97,43 +73,51 @@ class Webcam:
                 ratio = w / float(h)
                 # Check if contour is close to a square.
                 if ratio > 0.8 and ratio < 1.2 and w > 30 and w < 60 and area / (w * h) > 0.4:
-                    finalContours.append((x, y, w, h))
+                    final_contours.append((x, y, w, h))
 
         # Remove those than have not that much neighbours.
-        for contour in finalContours:
+        for contour in final_contours:
             neighbors = 0
             (x, y, w, h) = contour
-            for (x2, y2, w2, h2) in finalContours:
+            for (x2, y2, w2, h2) in final_contours:
                 if abs(x - x2) < (w * 3.5) and abs(y - y2) < (h * 3.5):
                     neighbors +=1
             if neighbors < 5:
-                finalContours.remove(contour)
+                final_contours.remove(contour)
 
         # Sort contours on the y-value first.
-        ySorted = sorted(finalContours[:9], key=lambda item: item[1])
+        y_sorted = sorted(final_contours[:9], key=lambda item: item[1])
 
         # Split into 3 rows and sort each row on the x-value.
-        top_row = sorted(ySorted[0:3], key=lambda item: item[0])
-        middle_row = sorted(ySorted[3:6], key=lambda item: item[0])
-        bottom_row = sorted(ySorted[6:9], key=lambda item: item[0])
+        top_row = sorted(y_sorted[0:3], key=lambda item: item[0])
+        middle_row = sorted(y_sorted[3:6], key=lambda item: item[0])
+        bottom_row = sorted(y_sorted[6:9], key=lambda item: item[0])
 
-        sortedContours = top_row + middle_row + bottom_row
-        return sortedContours
+        sorted_contours = top_row + middle_row + bottom_row
+        return sorted_contours
+
+    def scanned_successfully(self, sides):
+        """
+        Validate if the user scanned 9 colors for each side.
+
+        :param state list: The completely scanned cube state.
+        :returns: boolean
+        """
+        color_count = {}
+        for side, state in sides.items():
+            for bgr in state:
+                key = str(bgr)
+                if not key in color_count:
+                    color_count[key] = 1
+                else:
+                    color_count[key] = color_count[key] + 1
+        invalid_colors = [k for k, v in color_count.items() if v != 9]
+        return len(invalid_colors) == 0
 
     def draw_contours(self, frame, contours):
         if len(contours) == 9:
             for index, (x, y, w, h) in enumerate(contours):
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (36, 255, 12), 2)
-                cv2.putText(
-                    frame,
-                    '#{}'.format(index + 1),
-                    (int(x + (w / 4)), int(y + h / 2)),
-                    cv2.FONT_HERSHEY_TRIPLEX,
-                    0.5,
-                    (255, 255, 255),
-                    1,
-                    cv2.LINE_AA
-                )
 
     def scan(self):
         """
@@ -147,7 +131,7 @@ class Webcam:
         :returns: dictionary
         """
 
-        sides   = []
+        sides   = {}
         preview = [(0,0,0), (0,0,0), (0,0,0),
                    (0,0,0), (0,0,0), (0,0,0),
                    (0,0,0), (0,0,0), (0,0,0)]
@@ -162,7 +146,6 @@ class Webcam:
                 break
 
             _, frame = self.cam.read()
-            # labFrame = cv2.cvtColor(frame, cv2.COLOR_RGB2LAB)
             grayFrame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
             denoisedFrame = cv2.fastNlMeansDenoising(grayFrame, None, 10, 7, 7)
             blurredFrame = cv2.blur(denoisedFrame, (5, 5))
@@ -176,22 +159,21 @@ class Webcam:
 
             for index, (x, y, w, h) in enumerate(contours):
                 roi = frame[y+10:y+h-10, x+10:x+w-10]
-                avg_rgb = ColorDetector.get_dominant_rgb_color(roi)
-                state[index] = avg_rgb
+                avg_bgr = ColorDetector.get_dominant_color(roi)
+                state[index] = ColorDetector.get_closest_color(avg_bgr)['color_bgr']
 
             # Update the snapshot preview when space bar is pressed.
             if key == 32:
                 preview = list(state)
-                sides.append(state)
+                center_color_name = ColorDetector.get_closest_color(preview[4])['color_name']
+                sides[center_color_name] = preview
                 self.draw_stickers(self.preview_stickers, frame, preview)
-                if len(sides) == 6:
-                    break
 
             self.draw_stickers(self.current_stickers, frame, state)
             self.draw_stickers(self.preview_stickers, frame, preview)
 
             # Dislay amount of scanned sides.
-            text = 'scanned sides: {}/6'.format(len(sides))
+            text = 'scanned sides: {}/6'.format(len(sides.keys()))
             cv2.putText(frame,
                         text,
                         (20, self.height - 20),
@@ -207,7 +189,24 @@ class Webcam:
         self.cam.release()
         cv2.destroyAllWindows()
 
-        # TODO: convert rgb to color names.
-        return sides if len(sides) == 6 else False
+        if len(sides.keys()) != 6:
+            return False
+
+        if not self.scanned_successfully(sides):
+            return False
+
+
+        # Convert all the sides and their BGR colors to cube notation.
+        notation = dict(sides)
+        for side, state in notation.items():
+            for sticker_index, bgr in enumerate(state):
+                notation[side][sticker_index] = ColorDetector.convert_bgr_to_notation(bgr)
+
+        # Join all the sides together into one single string.
+        # Order must be URFDLB (white, red, green, yellow, orange, blue)
+        combined = ''
+        for side in ['white', 'red', 'green', 'yellow', 'orange', 'blue']:
+            combined += ''.join(notation[side])
+        return combined
 
 webcam = Webcam()

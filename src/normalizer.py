@@ -9,10 +9,10 @@ import json
 class Normalizer:
 
     def algorithm(self, alg, language):
-        """ Noramlize an algorithm from the
-        json-written manual.
+        """
+        Normalize an algorithm with the solve manual.
 
-        :param alg: The algorithm itself
+        :param alg: The algorithm itself.
         :returns: list
         """
         with open('solve-manual.json') as f:

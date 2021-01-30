@@ -1,11 +1,6 @@
-# qbr.
-A rubik's cube solver written in python 3 using OpenCV using your webcam.
+# Qbr
 
-NOTE: qbr uses color detection and color detection is insanely hard to fix for
-every possible situation, because certain light influences a color detector and the
-color scheme on a rubik's cube.
-The color detection in qbr is based on my color scheme which is a mid-bright scheme from
-the [Gans365](http://thecubicle.us/images/gans56b3.jpg) and in a room with normal day light.
+A rubik's cube solver written in python 3 using OpenCV via your webcam.
 
 # Table of Contents
 - [Introduction](#introduction)
@@ -16,20 +11,22 @@ the [Gans365](http://thecubicle.us/images/gans56b3.jpg) and in a room with norma
 
 
 # Introduction
-![demo](demo.png)
 
-The idea to create this came personally to mind when I started solving rubik's cubes.
-I solve on average a 3x3x3 rubik's cube in 14 seconds when warmed up. My personal record
-is 7.90 seconds, but there were already so many professional programmers around the world
-who created robots that solve a rubik's cube in an ETA of 5 seconds and since 2016 in 1 second
+![demo](demo.jpg)
+
+The idea to create this came personally to mind when I started solving rubik's
+cubes.  My personal record is 7.90 seconds, but there were already so many
+professional programmers around the world who created robots that solve a
+rubik's cube in an ETA of 5 seconds and since 2016 in 1 second
 ([link](https://www.youtube.com/watch?v=ixTddQQ2Hs4)).
 That inspired me to create my own. I started using images only and eventually switched to webcam.
 
-One of the main things that killed me during developing this was color detection. It works for my
-room, but I bet it doesn't work for you, or you must have the same lighting and color scheme as I do.
+Color detection might be a problem if you:
+- Have colors that are not easy to distinguish
+- Do not have the follow color scheme: white, yellow, red, orange, blue, green.
 
 # Installation
-Start off by cloning:
+
 ```
 $ git clone https://github.com/kkoomen/qbr.git
 $ cd qbr
@@ -40,46 +37,48 @@ $ pip3 install -r requirements.txt
 
 # Usage
 
-Run qbr:
+Run Qbr:
 
 ```
 $ ./src/qbr.py
 ```
 
 This opens a webcam interface where you see basically the above photo.
-You have 4 things:
+
+There have 4 things:
 
 * The 9 center squares.
 
 These are used for scanning in
 your cube colors.
 
-* The 9 stickers in the upper left corner.
+* The first 9-stickers in the upper left corner.
 
-These will update
-immediately how the computer sees the colors.
+These will update immediately and display how the computer detects the colors.
 
-* The seconds 9-sticker display below the one in the upper left corner.
+* The second 9-sticker display below the one in the upper left corner.
 
-When pressing `space` a 3rd cube template updates below the one in the upper left corner.
-This is the state that is saved, so you know how qbr saved it.
+When pressing `SPACE` it will update this state in order to show you what state
+it has saved. You can press space as many times as you'd like if it has been
+detected wrong.
 
 * Amount of sides scanned
 
-This is not shown in the above demo image, but in the bottom left corner is shown
-the amount of sides scanned. This is so you know if you've scanned in all sides before
-pressing `esc`.
+In the bottom left corner is shown the amount of sides scanned. This is so you
+know if you've scanned in all sides before pressing `ESC`.
 
-### Keybindings:
+# Getting the solution
 
-`space` for saving the current view
-
-`esc` for quit.
-
-Qbr checks if you have filled in all 6 sides when pressing `esc`. If so, it'll
+Qbr checks if you have filled in all 6 sides when pressing `ESC`. If so, it'll
 solve it if you've scanned it in correctly.
 
 You should now see a solution (or an error if you did it wrong).
+
+### Keybindings:
+
+- `SPACE` for saving the current state
+
+- `ESC` to quit
 
 # Paramaters
 
@@ -91,30 +90,35 @@ For example:
 * `F2` will be: `Turn the front face 180 degrees.`
 
 You can also specify a language by passing in `-l` or `--language`. Default language
-is set to `en`. The only language other then english that is available is dutch which
-is specified with `nl`.
+is set to `en`.
 
+Available languages are:
 
-#### Test runs I've done:
+| language | key  |
+| ---      | ---  |
+| English  | `en` |
+| Dutch    | `nl` |
+
+# Example runs
 
 ```
 $ ./qbr.py
--- SOLUTION --
 Starting position:
-    front: green
-    top: white
+front: green
+top: white
 
-U2 R D2 L2 F2 L U2 L F' U L U R2 B2 U' F2 D2 R2 D2 R2 (20 moves)
+Moves: 20
+Solution: U2 R D2 L2 F2 L U2 L F' U L U R2 B2 U' F2 D2 R2 D2 R2
 ```
 
 ```
 $ ./qbr.py -n
--- SOLUTION --
 Starting position:
-    front: green
-    top: white
+front: green
+top: white
 
-B2 U2 F' R U D' L' B' U L F U F2 R2 F2 D' F2 D R2 D2 (20 moves)
+Moves: 20
+Solution: B2 U2 F' R U D' L' B' U L F U F2 R2 F2 D' F2 D R2 D2
 
 1. Turn the back side 180 degrees.
 2. Turn the top layer 180 degrees.
@@ -138,9 +142,21 @@ B2 U2 F' R U D' L' B' U L F U F2 R2 F2 D' F2 D R2 D2 (20 moves)
 20. Turn the bottom layer 180 degrees.
 ```
 
+# Inspirational sources
+
+Special thanks to [HaginCodes](https://github.com/HaginCodes) for the main
+inspiration on how to improve my color detection.
+
+https://github.com/HaginCodes/3x3x3-Rubiks-Cube-Solver
+
+http://programmablebrick.blogspot.com/2017/02/rubiks-cube-tracker-using-opencv.html
+
+https://gist.github.com/flyboy74/2cc3097f784c8c236a1a85278f08cddd
+
+https://github.com/dwalton76/rubiks-color-resolver
 
 # License
 
-qbr is licensed under the MIT License.
+Qbr is licensed under the MIT License.
 
 Copyright (c) Kim Koomen.

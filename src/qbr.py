@@ -6,7 +6,6 @@
 import sys
 import kociemba
 import argparse
-from combiner import combine
 from video import webcam
 from normalizer import normalize
 
@@ -18,32 +17,47 @@ class Qbr:
         self.language = (language[0]) if isinstance(language, list) else language
 
     def run(self):
+        print('SCANNING GUIDE')
+        print('Make sure to scan the cube correctly by having the white-centered side on top when starting.')
+        print('')
+        print('Make sure to scan the cube using the following order')
+        print('- Scan the green-centered side')
+        print('- Scan the orange-centered side')
+        print('- Scan the blue-centered side')
+        print('- Scan the red-centered side')
+        print('')
+        print('Now, make sure to rotate the cube back to the green-centered side.')
+        print('')
+        print('- Turn the cube down and scan the white-centered side (green on bottom, white in front)')
+        print('- Turn the cube 180 degrees back and scan the last yellow-centered side (green on top, yellow in front)')
+        print('')
+
         state = webcam.scan()
         if not state:
-            print('\033[0;33m[QBR SCAN ERROR] Ops, you did not scan in all 6 sides.')
+            print('\033[0;33m[QBR SCAN ERROR] Ops, you did not scan in all 6 sides correctly')
             print('Please try again.\033[0m')
             sys.exit(1)
 
-        unsolvedState = combine.sides(state)
         try:
-            algorithm = kociemba.solve(unsolvedState)
+            algorithm = kociemba.solve(state)
             length = len(algorithm.split(' '))
-        except Exception:
-            print('\033[0;33m[QBR SOLVE ERROR] Ops, you did not scan in all 6 sides correctly.')
+        except Exception as err:
+            print('\033[0;33m[QBR SCAN ERROR] Ops, you did not scan in all 6 sides correctly')
             print('Please try again.\033[0m')
             sys.exit(1)
 
-        print('-- SOLUTION --')
-        print('Starting position:\n    front: green\n    top: white\n')
-        print(algorithm, '({0} moves)'.format(length), '\n')
+        print('Starting position:\nfront: green\ntop: white\n')
+        print('Moves: {}'.format(length))
+        print('Solution: {}'.format(algorithm))
 
         if self.humanize:
             manual = normalize.algorithm(algorithm, self.language)
             for index, text in enumerate(manual):
                 print('{}. {}'.format(index+1, text))
 
+
 if __name__ == '__main__':
-    # define argument parser.
+    # Define argument parser.
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', '--normalize', default=False, action='store_true',
             help='Shows the solution normalized. For example "R2" would be: \
@@ -54,8 +68,5 @@ if __name__ == '__main__':
                     Default is "en".')
     args = parser.parse_args()
 
-    # run Qbr with its arguments.
-    Qbr(
-        args.normalize,
-        args.language
-    ).run()
+    # Run Qbr with its arguments.
+    Qbr(args.normalize, args.language).run()
