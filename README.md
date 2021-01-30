@@ -3,12 +3,18 @@
 A rubik's cube solver written in python 3 using OpenCV via your webcam.
 
 # Table of Contents
+
+- [Qbr](#qbr)
+- [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
-    - [Paramaters](#paramaters)
+- [Getting the solution](#getting-the-solution)
+    + [Keybindings:](#keybindings)
+- [Paramaters](#paramaters)
+- [Example runs](#example-runs)
+- [Inspirational sources](#inspirational-sources)
 - [License](#license)
-
 
 # Introduction
 
