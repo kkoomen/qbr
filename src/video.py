@@ -115,9 +115,8 @@ class Webcam:
         return len(invalid_colors) == 0
 
     def draw_contours(self, frame, contours):
-        if len(contours) == 9:
-            for index, (x, y, w, h) in enumerate(contours):
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (36, 255, 12), 2)
+        for index, (x, y, w, h) in enumerate(contours):
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (36, 255, 12), 2)
 
     def scan(self):
         """
@@ -155,12 +154,12 @@ class Webcam:
             dilatedFrame = cv2.dilate(cannyFrame, kernel)
 
             contours = self.find_contours(dilatedFrame)
-            self.draw_contours(frame, contours)
-
-            for index, (x, y, w, h) in enumerate(contours):
-                roi = frame[y+10:y+h-10, x+10:x+w-10]
-                avg_bgr = ColorDetector.get_dominant_color(roi)
-                state[index] = ColorDetector.get_closest_color(avg_bgr)['color_bgr']
+            if len(contours) == 9:
+                self.draw_contours(frame, contours)
+                for index, (x, y, w, h) in enumerate(contours):
+                    roi = frame[y+10:y+h-10, x+10:x+w-10]
+                    avg_bgr = ColorDetector.get_dominant_color(roi)
+                    state[index] = ColorDetector.get_closest_color(avg_bgr)['color_bgr']
 
             # Update the snapshot preview when space bar is pressed.
             if key == 32:
