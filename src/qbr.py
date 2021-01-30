@@ -28,8 +28,8 @@ class Qbr:
         print('')
         print('Now, make sure to rotate the cube back to the green-centered side.')
         print('')
-        print('- Turn the cube down and scan the white-centered side (green on bottom, white in front)')
-        print('- Turn the cube 180 degrees back and scan the last yellow-centered side (green on top, yellow in front)')
+        print('- Turn the cube down and scan the white-centered side (green on bottom, white facing the camera)')
+        print('- Turn the cube 180 degrees back and scan the last yellow-centered side (green on top, yellow facing the camera)')
         print('')
 
         state = webcam.scan()
