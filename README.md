@@ -13,7 +13,7 @@ A rubik's cube solver written in python 3 using OpenCV via your webcam.
     + [The second 9-sticker display below the one in the upper left corner](#the-second-9-sticker-display-below-the-one-in-the-upper-left-corner)
     + [Amount of sides scanned](#amount-of-sides-scanned)
 - [Getting the solution](#getting-the-solution)
-    + [Keybindings:](#keybindings)
+    + [Keybindings](#keybindings)
 - [Paramaters](#paramaters)
 - [Example runs](#example-runs)
 - [Inspirational sources](#inspirational-sources)
@@ -78,7 +78,7 @@ solve it if you've scanned it in correctly.
 
 You should now see a solution (or an error if you did it wrong).
 
-### Keybindings:
+### Keybindings
 
 - `SPACE` for saving the current state
 
