@@ -18,6 +18,15 @@ class Webcam:
         self.current_stickers = self.get_sticker_coordinates('current')
         self.preview_stickers = self.get_sticker_coordinates('preview')
 
+        self.average_sticker_colors = []
+        self.sides   = {}
+        self.preview = [(0,0,0), (0,0,0), (0,0,0),
+                   (0,0,0), (0,0,0), (0,0,0),
+                   (0,0,0), (0,0,0), (0,0,0)]
+        self.state   = [(0,0,0), (0,0,0), (0,0,0),
+                   (0,0,0), (0,0,0), (0,0,0),
+                   (0,0,0), (0,0,0), (0,0,0)]
+
         self.cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         self.width  = int(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -54,7 +63,7 @@ class Webcam:
             cv2.rectangle(
                 frame,
                 (x, y),
-                (x+PREVIEW_STICKER_STATE_TILE_SIZE, y+PREVIEW_STICKER_STATE_TILE_SIZE),
+                (x + PREVIEW_STICKER_STATE_TILE_SIZE, y + PREVIEW_STICKER_STATE_TILE_SIZE),
                 tuple([int(c) for c in state[index]]),
                 -1
             )
@@ -94,17 +103,23 @@ class Webcam:
         bottom_row = sorted(y_sorted[6:9], key=lambda item: item[0])
 
         sorted_contours = top_row + middle_row + bottom_row
+
+        # Make the area a bit smaller to remove accidental unwanted
+        # colors, ensuring we capture the color of the sticker only.
+        for index, contour in enumerate(sorted_contours):
+            (x, y, w, h) = contour
+            sorted_contours[index] = (x + 7, y + 7, w - 14, h - 14)
+
         return sorted_contours
 
-    def scanned_successfully(self, sides):
+    def scanned_successfully(self):
         """
         Validate if the user scanned 9 colors for each side.
 
-        :param state list: The completely scanned cube state.
         :returns: boolean
         """
         color_count = {}
-        for side, state in sides.items():
+        for side, state in self.sides.items():
             for bgr in state:
                 key = str(bgr)
                 if not key in color_count:
@@ -118,6 +133,18 @@ class Webcam:
         for index, (x, y, w, h) in enumerate(contours):
             cv2.rectangle(frame, (x, y), (x + w, y + h), (36, 255, 12), 2)
 
+    def update_preview(self, frame):
+        self.preview = list(self.state)
+        center_color_name = ColorDetector.get_closest_color(self.preview[4])['color_name']
+        self.sides[center_color_name] = self.preview
+        self.draw_stickers(self.preview_stickers, frame, self.preview)
+
+    def update_state(self, frame, contours):
+        for index, (x, y, w, h) in enumerate(contours):
+            roi = frame[y:y+h, x:x+w]
+            avg_bgr = ColorDetector.get_dominant_color(roi)
+            self.state[index] = ColorDetector.get_closest_color(avg_bgr)['color_bgr']
+
     def scan(self):
         """
         Open up the webcam and scans the 9 regions in the center
@@ -129,14 +156,6 @@ class Webcam:
 
         :returns: dictionary
         """
-
-        sides   = {}
-        preview = [(0,0,0), (0,0,0), (0,0,0),
-                   (0,0,0), (0,0,0), (0,0,0),
-                   (0,0,0), (0,0,0), (0,0,0)]
-        state   = [(0,0,0), (0,0,0), (0,0,0),
-                   (0,0,0), (0,0,0), (0,0,0),
-                   (0,0,0), (0,0,0), (0,0,0)]
         while True:
             key = cv2.waitKey(10) & 0xff
 
@@ -146,8 +165,7 @@ class Webcam:
 
             _, frame = self.cam.read()
             grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            denoisedFrame = cv2.fastNlMeansDenoising(grayFrame, None, 10, 7, 7)
-            blurredFrame = cv2.blur(denoisedFrame, (5, 5))
+            blurredFrame = cv2.blur(grayFrame, (5, 5))
             cannyFrame = cv2.Canny(blurredFrame, 30, 60, 3)
 
             kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
@@ -156,23 +174,17 @@ class Webcam:
             contours = self.find_contours(dilatedFrame)
             if len(contours) == 9:
                 self.draw_contours(frame, contours)
-                for index, (x, y, w, h) in enumerate(contours):
-                    roi = frame[y+10:y+h-10, x+10:x+w-10]
-                    avg_bgr = ColorDetector.get_dominant_color(roi)
-                    state[index] = ColorDetector.get_closest_color(avg_bgr)['color_bgr']
+                self.update_state(frame, contours)
 
             # Update the snapshot preview when space bar is pressed.
             if key == 32:
-                preview = list(state)
-                center_color_name = ColorDetector.get_closest_color(preview[4])['color_name']
-                sides[center_color_name] = preview
-                self.draw_stickers(self.preview_stickers, frame, preview)
+                self.update_preview(frame)
 
-            self.draw_stickers(self.current_stickers, frame, state)
-            self.draw_stickers(self.preview_stickers, frame, preview)
+            self.draw_stickers(self.current_stickers, frame, self.state)
+            self.draw_stickers(self.preview_stickers, frame, self.preview)
 
             # Dislay amount of scanned sides.
-            text = 'scanned sides: {}/6'.format(len(sides.keys()))
+            text = 'scanned sides: {}/6'.format(len(self.sides.keys()))
             cv2.putText(frame,
                         text,
                         (20, self.height - 20),
@@ -188,20 +200,20 @@ class Webcam:
         self.cam.release()
         cv2.destroyAllWindows()
 
-        if len(sides.keys()) != 6:
+        if len(self.sides.keys()) != 6:
             return False
 
-        if not self.scanned_successfully(sides):
+        if not self.scanned_successfully(self.sides):
             return False
 
 
         # Convert all the sides and their BGR colors to cube notation.
-        notation = dict(sides)
+        notation = dict(self.sides)
         for side, state in notation.items():
             for sticker_index, bgr in enumerate(state):
                 notation[side][sticker_index] = ColorDetector.convert_bgr_to_notation(bgr)
 
-        # Join all the sides together into one single string.
+        # Join all the self.sides together into one single string.
         # Order must be URFDLB (white, red, green, yellow, orange, blue)
         combined = ''
         for side in ['white', 'red', 'green', 'yellow', 'orange', 'blue']:
