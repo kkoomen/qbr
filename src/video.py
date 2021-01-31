@@ -137,6 +137,7 @@ class Webcam:
         state   = [(0,0,0), (0,0,0), (0,0,0),
                    (0,0,0), (0,0,0), (0,0,0),
                    (0,0,0), (0,0,0), (0,0,0)]
+        average_sticker_colors = {}
         while True:
             key = cv2.waitKey(10) & 0xff
 
@@ -157,9 +158,28 @@ class Webcam:
             if len(contours) == 9:
                 self.draw_contours(frame, contours)
                 for index, (x, y, w, h) in enumerate(contours):
-                    roi = frame[y+10:y+h-10, x+10:x+w-10]
+                    max_average_rounds = 5
+                    if index in average_sticker_colors and len(average_sticker_colors[index]) == max_average_rounds:
+                        sorted_items = {}
+                        for bgr in average_sticker_colors[index]:
+                            key = str(bgr)
+                            if key in sorted_items:
+                                sorted_items[key] += 1
+                            else:
+                                sorted_items[key] = 1
+                        most_common_color = max(sorted_items, key=lambda i: sorted_items[i])
+                        average_sticker_colors[index] = []
+                        state[index] = eval(most_common_color)
+                        break
+
+                    roi = frame[y+7:y+h-7, x+14:x+w-14]
                     avg_bgr = ColorDetector.get_dominant_color(roi)
-                    state[index] = ColorDetector.get_closest_color(avg_bgr)['color_bgr']
+                    closest_color = ColorDetector.get_closest_color(avg_bgr)['color_bgr']
+                    state[index] = closest_color
+                    if index in average_sticker_colors:
+                        average_sticker_colors[index].append(closest_color)
+                    else:
+                        average_sticker_colors[index] = [closest_color]
 
             # Update the snapshot preview when space bar is pressed.
             if key == 32:
