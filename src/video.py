@@ -145,7 +145,7 @@ class Webcam:
                 break
 
             _, frame = self.cam.read()
-            grayFrame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+            grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             denoisedFrame = cv2.fastNlMeansDenoising(grayFrame, None, 10, 7, 7)
             blurredFrame = cv2.blur(denoisedFrame, (5, 5))
             cannyFrame = cv2.Canny(blurredFrame, 30, 60, 3)
