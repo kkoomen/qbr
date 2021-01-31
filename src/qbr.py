@@ -18,15 +18,10 @@ class Qbr:
 
     def run(self):
         print('SCANNING GUIDE')
-        print('Make sure to scan the cube correctly by having the white-centered side on top when starting.')
+        print('Make sure to start by scanning by having the green-centered side facing the camera and having the white-centered side on top.')
+        print('Start by scanning the green, red, blue and orange sides. The order in which these colors are scanned does not matter.')
         print('')
-        print('Make sure to scan the cube using the following order')
-        print('- Scan the red-centered side')
-        print('- Scan the blue-centered side')
-        print('- Scan the orange-centered side')
-        print('- Scan the green-centered side')
-        print('')
-        print('Now, make sure to rotate the cube back to the green-centered side.')
+        print('Now, make sure to rotate the cube back to where the green-centered side is again facing the camera.')
         print('')
         print('- Turn the cube down and scan the white-centered side (green on bottom, white facing the camera)')
         print('- Turn the cube 180 degrees back and scan the last yellow-centered side (green on top, yellow facing the camera)')
