@@ -233,8 +233,8 @@ class Webcam:
             if key == 32 and not self.calibrate_mode:
                 self.update_snapshot(frame)
 
-            # Press 's' to toggle scan mode.
-            if key == ord('s'):
+            # Press 'c' to toggle calibrate mode.
+            if key == ord('c'):
                 self.reset_calibrate_mode()
                 self.calibrate_mode = not self.calibrate_mode
 
