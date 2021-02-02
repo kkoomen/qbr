@@ -8,17 +8,17 @@ import cv2
 from helpers import ciede2000, bgr2lab
 
 
-BGR_COLORS = {
-    'red'   : (0, 0, 255),
-    'orange': (0, 165, 255),
-    'blue'  : (255, 0, 0),
-    'green' : (0, 255, 0),
-    'white' : (255, 255, 255),
-    'yellow': (0, 255, 255)
-}
-
-
 class ColorDetection:
+
+    def __init__(self):
+        self.cube_color_palette = {
+            'red'   : (0, 0, 255),
+            'orange': (0, 165, 255),
+            'blue'  : (255, 0, 0),
+            'green' : (0, 255, 0),
+            'white' : (255, 255, 255),
+            'yellow': (0, 255, 255)
+        }
 
     def get_dominant_color(self, roi):
         """
@@ -46,7 +46,7 @@ class ColorDetection:
         """
         lab = bgr2lab(bgr)
         distances = []
-        for color_name, color_bgr in BGR_COLORS.items():
+        for color_name, color_bgr in self.cube_color_palette.items():
             distances.append({
                 'color_name': color_name,
                 'color_bgr': color_bgr,
@@ -70,9 +70,12 @@ class ColorDetection:
             'orange': 'L',
             'yellow': 'D'
         }
-        for color_name, color_bgr in BGR_COLORS.items():
-            if color_bgr == bgr:
-                return notations[color_name]
-        return False
+        color_name = self.get_closest_color(bgr)['color_name']
+        return notations[color_name]
+
+    def set_cube_color_pallete(self, palette):
+        self.cube_color_palette = palette
+        for side, bgr in self.cube_color_palette.items():
+            self.cube_color_palette[side] = tuple([int(c) for c in bgr])
 
 ColorDetector = ColorDetection()

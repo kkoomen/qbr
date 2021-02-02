@@ -14,7 +14,7 @@ PREVIEW_STICKER_STATE_TILE_SIZE = 32
 class Webcam:
 
     def __init__(self):
-        self.cam              = cv2.VideoCapture(0)
+        self.cam = cv2.VideoCapture(0)
         self.current_stickers = self.get_sticker_coordinates('current')
         self.preview_stickers = self.get_sticker_coordinates('preview')
         self.average_sticker_colors = {}
@@ -31,6 +31,12 @@ class Webcam:
         self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         self.width  = int(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+        self.scan_mode = False
+        self.scanned_colors = {}
+        self.scan_sides = ['green', 'red', 'blue', 'orange', 'white', 'yellow']
+        self.current_scan_index = 0
+        self.done_scanning = False
 
     def get_sticker_coordinates(self, group):
         """
@@ -160,7 +166,68 @@ class Webcam:
         self.sides[center_color_name] = self.preview
         self.draw_stickers(self.preview_stickers, frame, self.preview)
 
-    def scan(self):
+    def display_scanned_sides(self, frame):
+        text = 'scanned sides: {}/6'.format(len(self.sides.keys()))
+        cv2.putText(frame,
+                    text,
+                    (20, self.height - 20),
+                    cv2.FONT_HERSHEY_TRIPLEX,
+                    0.5,
+                    (255, 255, 255),
+                    1,
+                    cv2.LINE_AA)
+
+    def display_current_mode(self, frame):
+        mode = 'scan' if self.scan_mode else 'solve'
+        text = '{} mode'.format(mode)
+        cv2.putText(frame,
+                    text,
+                    (self.width - 120, self.height - 20),
+                    cv2.FONT_HERSHEY_TRIPLEX,
+                    0.5,
+                    (255, 255, 255),
+                    1,
+                    cv2.LINE_AA)
+
+    def display_current_scan_color(self, frame):
+        if not self.done_scanning:
+            current_color = self.scan_sides[self.current_scan_index]
+            text = 'Scan the {} side'.format(current_color)
+            cv2.putText(frame,
+                        text,
+                        (int(self.width / 2) - 90, 40),
+                        cv2.FONT_HERSHEY_TRIPLEX,
+                        0.5,
+                        (255, 255, 255),
+                        1,
+                        cv2.LINE_AA)
+
+    def display_scanned_colors(self, frame):
+        for index, (color_name, color_bgr) in enumerate(self.scanned_colors.items()):
+            y = int(SCAN_STICKERS_AREA_TILE_SIZE * (index + 1))
+            cv2.rectangle(
+                frame,
+                (90, y),
+                (90 + SCAN_STICKERS_AREA_TILE_SIZE, y + SCAN_STICKERS_AREA_TILE_SIZE),
+                tuple([int(c) for c in color_bgr]),
+                -1
+            )
+            cv2.putText(frame,
+                        color_name,
+                        (20, y + 18),
+                        cv2.FONT_HERSHEY_TRIPLEX,
+                        0.5,
+                        (255, 255, 255),
+                        1,
+                        cv2.LINE_AA)
+
+    def reset_scan_mode(self):
+        self.scan_mode = False
+        self.scanned_colors = {}
+        self.current_scan_index = 0
+        self.done_scanning = False
+
+    def run(self):
         """
         Open up the webcam and scans the 9 regions in the center
         and show a preview in the left upper corner.
@@ -172,15 +239,22 @@ class Webcam:
         :returns: dictionary
         """
         while True:
+            _, frame = self.cam.read()
             key = cv2.waitKey(10) & 0xff
 
             # Quit on escape.
             if key == 27:
                 break
 
-            _, frame = self.cam.read()
+            # Update the snapshot preview when space bar is pressed.
+            if key == 32 and not self.scan_mode:
+                self.update_preview(frame)
+
+            # Press 's' to toggle scan mode.
+            if key == ord('s'):
+                self.scan_mode = not self.scan_mode
+
             grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            # denoisedFrame = cv2.fastNlMeansDenoising(grayFrame, None, 10, 7, 7)
             blurredFrame = cv2.blur(grayFrame, (5, 5))
             cannyFrame = cv2.Canny(blurredFrame, 30, 60, 3)
 
@@ -190,27 +264,30 @@ class Webcam:
             contours = self.find_contours(dilatedFrame)
             if len(contours) == 9:
                 self.draw_contours(frame, contours)
-                self.update_state(frame, contours)
+                if not self.scan_mode:
+                    self.update_state(frame, contours)
+                elif key == 32 and self.done_scanning == False:
+                    current_color = self.scan_sides[self.current_scan_index]
+                    (x, y, w, h) = contours[4]
+                    roi = frame[y+7:y+h-7, x+14:x+w-14]
+                    avg_bgr = ColorDetector.get_dominant_color(roi)
+                    self.scanned_colors[current_color] = avg_bgr
+                    self.current_scan_index += 1
+                    self.done_scanning = self.current_scan_index == len(self.scan_sides)
+                    if self.done_scanning:
+                        ColorDetector.set_cube_color_pallete(self.scanned_colors)
+                        self.reset_scan_mode()
 
-            # Update the snapshot preview when space bar is pressed.
-            if key == 32:
-                self.update_preview(frame)
+            if self.scan_mode:
+                self.display_current_scan_color(frame)
+                self.display_scanned_colors(frame)
+            else:
+                self.draw_stickers(self.current_stickers, frame, self.state)
+                self.draw_stickers(self.preview_stickers, frame, self.preview)
 
-            self.draw_stickers(self.current_stickers, frame, self.state)
-            self.draw_stickers(self.preview_stickers, frame, self.preview)
+            self.display_scanned_sides(frame)
+            self.display_current_mode(frame)
 
-            # Dislay amount of scanned sides.
-            text = 'scanned sides: {}/6'.format(len(self.sides.keys()))
-            cv2.putText(frame,
-                        text,
-                        (20, self.height - 20),
-                        cv2.FONT_HERSHEY_TRIPLEX,
-                        0.5,
-                        (255, 255, 255),
-                        1,
-                        cv2.LINE_AA)
-
-            # Show the result.
             cv2.imshow('default', frame)
 
         self.cam.release()

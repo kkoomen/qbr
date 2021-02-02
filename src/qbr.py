@@ -27,7 +27,7 @@ class Qbr:
         print('- Turn the cube 180 degrees back and scan the last yellow-centered side (green on top, yellow facing the camera)')
         print('')
 
-        state = webcam.scan()
+        state = webcam.run()
         if not state:
             print('\033[0;33m[QBR SCAN ERROR] Ops, you did not scan in all 6 sides correctly')
             print('Please try again.\033[0m')
