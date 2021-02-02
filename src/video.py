@@ -97,7 +97,7 @@ class Webcam:
             (x, y, w, h) = contour
             for (x2, y2, w2, h2) in final_contours:
                 if abs(x - x2) < (w * 3.5) and abs(y - y2) < (h * 3.5):
-                    neighbors +=1
+                    neighbors += 1
             if neighbors < 5:
                 final_contours.remove(contour)
 
