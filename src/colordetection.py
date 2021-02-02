@@ -11,7 +11,7 @@ from helpers import ciede2000, bgr2lab
 class ColorDetection:
 
     def __init__(self):
-        self.cube_color_palette = {
+        self.prominent_color_palette = {
             'red'   : (0, 0, 255),
             'orange': (0, 165, 255),
             'blue'  : (255, 0, 0),
@@ -19,6 +19,13 @@ class ColorDetection:
             'white' : (255, 255, 255),
             'yellow': (0, 255, 255)
         }
+        self.cube_color_palette = self.prominent_color_palette
+
+    def get_prominent_color(self, bgr):
+        for color_name, color_bgr in self.cube_color_palette.items():
+            if tuple([int(c) for c in bgr]) == color_bgr:
+                return self.prominent_color_palette[color_name]
+        return self.prominent_color_palette['white']
 
     def get_dominant_color(self, roi):
         """

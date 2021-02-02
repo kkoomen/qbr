@@ -40,7 +40,7 @@ class Webcam:
         self.current_color_to_calibrate_index = 0
         self.done_calibrating = False
 
-    def draw_stickers(self, frame, preview, offset_x, offset_y):
+    def draw_stickers(self, frame, stickers, offset_x, offset_y):
         """Draws the 9 current stickers in the frame."""
         index = -1
         for row in range(3):
@@ -65,7 +65,7 @@ class Webcam:
                     frame,
                     (x1 + 1, y1 + 1),
                     (x2 - 1, y2 - 1),
-                    tuple([int(c) for c in preview[index]]),
+                    ColorDetector.get_prominent_color(stickers[index]),
                     -1
                 )
 
@@ -229,7 +229,7 @@ class Webcam:
             if key == 27:
                 break
 
-            # Update the snapshot preview when space bar is pressed.
+            # Update the snapshot when space bar is pressed.
             if key == 32 and not self.calibrate_mode:
                 self.update_snapshot(frame)
 
