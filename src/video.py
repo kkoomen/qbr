@@ -11,6 +11,8 @@ import math
 SCAN_STICKERS_AREA_TILE_SIZE = 30
 PREVIEW_STICKER_STATE_TILE_SIZE = 32
 STICKER_CONTOUR_COLOR = (36, 255, 12)
+TEXT_FONT = cv2.FONT_HERSHEY_TRIPLEX
+TEXT_SIZE = 0.5
 
 class Webcam:
 
@@ -88,7 +90,7 @@ class Webcam:
                 # Find aspect ratio of boundary rectangle around the countours.
                 ratio = w / float(h)
                 # Check if contour is close to a square.
-                if ratio > 0.8 and ratio < 1.2 and w > 30 and w < 60 and area / (w * h) > 0.4:
+                if ratio >= 0.8 and ratio <= 1.2 and w >= 30 and w <= 60 and area / (w * h) > 0.4:
                     final_contours.append((x, y, w, h))
 
         # Remove those than have not that much neighbours.
@@ -172,16 +174,22 @@ class Webcam:
         self.sides[center_color_name] = self.preview
         self.draw_stickers(self.preview_stickers, frame, self.preview)
 
-    def render_text(self, frame, text, pos, color=(255, 255, 255), size=0.5):
-        cv2.putText(frame, text, pos, cv2.FONT_HERSHEY_TRIPLEX, size, (0, 0, 0), 2, cv2.LINE_AA)
-        cv2.putText(frame, text, pos, cv2.FONT_HERSHEY_TRIPLEX, size, color, 1, cv2.LINE_AA)
+    def render_text(self, frame, text, pos, color=(255, 255, 255), size=TEXT_SIZE):
+        cv2.putText(frame, text, pos, TEXT_FONT, size, (0, 0, 0), 2, cv2.LINE_AA)
+        cv2.putText(frame, text, pos, TEXT_FONT, size, color, 1, cv2.LINE_AA)
 
     def display_scanned_sides(self, frame):
         text = 'scanned sides: {}/6'.format(len(self.sides.keys()))
         self.render_text(frame, text, (20, self.height - 20))
 
     def display_current_color_to_calibrate(self, frame):
-        if not self.done_calibrating:
+        if self.done_calibrating:
+            messages = ['Calibrated successfully', 'Press s to quit calibrate mode']
+            for index, text in enumerate(messages):
+                textsize = cv2.getTextSize(text, TEXT_FONT, TEXT_SIZE, 1)[0]
+                y = 40 + 20 * index
+                self.render_text(frame, text, (int(self.width / 2 - textsize[0] / 2), y))
+        else:
             current_color = self.cube_sides[self.current_color_to_calibrate_index]
             text = 'Calibrating {} side'.format(current_color)
             self.render_text(frame, text, (int(self.width / 2) - 100, 40))
@@ -252,8 +260,6 @@ class Webcam:
                     self.done_calibrating = self.current_color_to_calibrate_index == len(self.cube_sides)
                     if self.done_calibrating:
                         ColorDetector.set_cube_color_pallete(self.calibrated_colors)
-                        self.reset_calibrate_mode()
-                        self.calibrate_mode = False
 
             if self.calibrate_mode:
                 self.display_current_color_to_calibrate(frame)
