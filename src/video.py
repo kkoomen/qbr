@@ -14,6 +14,7 @@ PREVIEW_STICKER_STATE_TILE_SIZE = 32
 class Webcam:
 
     def __init__(self):
+        self.cube_sides = ['green', 'red', 'blue', 'orange', 'white', 'yellow']
         self.cam = cv2.VideoCapture(0)
         self.current_stickers = self.get_sticker_coordinates('current')
         self.preview_stickers = self.get_sticker_coordinates('preview')
@@ -32,11 +33,10 @@ class Webcam:
         self.width  = int(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-        self.scan_mode = False
-        self.scanned_colors = {}
-        self.scan_sides = ['green', 'red', 'blue', 'orange', 'white', 'yellow']
-        self.current_scan_index = 0
-        self.done_scanning = False
+        self.calibrate_mode = False
+        self.calibrated_colors = {}
+        self.current_color_to_calibrate_index = 0
+        self.done_calibrating = False
 
     def get_sticker_coordinates(self, group):
         """
@@ -177,33 +177,21 @@ class Webcam:
                     1,
                     cv2.LINE_AA)
 
-    def display_current_mode(self, frame):
-        mode = 'scan' if self.scan_mode else 'solve'
-        text = '{} mode'.format(mode)
-        cv2.putText(frame,
-                    text,
-                    (self.width - 120, self.height - 20),
-                    cv2.FONT_HERSHEY_TRIPLEX,
-                    0.5,
-                    (255, 255, 255),
-                    1,
-                    cv2.LINE_AA)
-
-    def display_current_scan_color(self, frame):
-        if not self.done_scanning:
-            current_color = self.scan_sides[self.current_scan_index]
-            text = 'Scan the {} side'.format(current_color)
+    def display_current_color_to_calibrate(self, frame):
+        if not self.done_calibrating:
+            current_color = self.cube_sides[self.current_color_to_calibrate_index]
+            text = 'Calibrating {} side'.format(current_color)
             cv2.putText(frame,
                         text,
-                        (int(self.width / 2) - 90, 40),
+                        (int(self.width / 2) - 100, 40),
                         cv2.FONT_HERSHEY_TRIPLEX,
                         0.5,
                         (255, 255, 255),
                         1,
                         cv2.LINE_AA)
 
-    def display_scanned_colors(self, frame):
-        for index, (color_name, color_bgr) in enumerate(self.scanned_colors.items()):
+    def display_calibrated_colors(self, frame):
+        for index, (color_name, color_bgr) in enumerate(self.calibrated_colors.items()):
             y = int(SCAN_STICKERS_AREA_TILE_SIZE * (index + 1))
             cv2.rectangle(
                 frame,
@@ -221,11 +209,11 @@ class Webcam:
                         1,
                         cv2.LINE_AA)
 
-    def reset_scan_mode(self):
-        self.scan_mode = False
-        self.scanned_colors = {}
-        self.current_scan_index = 0
-        self.done_scanning = False
+    def reset_calibrate_mode(self):
+        self.calibrate_mode = False
+        self.calibrated_colors = {}
+        self.current_color_to_calibrate_index = 0
+        self.done_calibrating = False
 
     def run(self):
         """
@@ -247,12 +235,12 @@ class Webcam:
                 break
 
             # Update the snapshot preview when space bar is pressed.
-            if key == 32 and not self.scan_mode:
+            if key == 32 and not self.calibrate_mode:
                 self.update_preview(frame)
 
             # Press 's' to toggle scan mode.
             if key == ord('s'):
-                self.scan_mode = not self.scan_mode
+                self.calibrate_mode = not self.calibrate_mode
 
             grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             blurredFrame = cv2.blur(grayFrame, (5, 5))
@@ -264,29 +252,27 @@ class Webcam:
             contours = self.find_contours(dilatedFrame)
             if len(contours) == 9:
                 self.draw_contours(frame, contours)
-                if not self.scan_mode:
+                if not self.calibrate_mode:
                     self.update_state(frame, contours)
-                elif key == 32 and self.done_scanning == False:
-                    current_color = self.scan_sides[self.current_scan_index]
+                elif key == 32 and self.done_calibrating == False:
+                    current_color = self.cube_sides[self.current_color_to_calibrate_index]
                     (x, y, w, h) = contours[4]
                     roi = frame[y+7:y+h-7, x+14:x+w-14]
                     avg_bgr = ColorDetector.get_dominant_color(roi)
-                    self.scanned_colors[current_color] = avg_bgr
-                    self.current_scan_index += 1
-                    self.done_scanning = self.current_scan_index == len(self.scan_sides)
-                    if self.done_scanning:
-                        ColorDetector.set_cube_color_pallete(self.scanned_colors)
-                        self.reset_scan_mode()
+                    self.calibrated_colors[current_color] = avg_bgr
+                    self.current_color_to_calibrate_index += 1
+                    self.done_calibrating = self.current_color_to_calibrate_index == len(self.cube_sides)
+                    if self.done_calibrating:
+                        ColorDetector.set_cube_color_pallete(self.calibrated_colors)
+                        self.reset_calibrate_mode()
 
-            if self.scan_mode:
-                self.display_current_scan_color(frame)
-                self.display_scanned_colors(frame)
+            if self.calibrate_mode:
+                self.display_current_color_to_calibrate(frame)
+                self.display_calibrated_colors(frame)
             else:
                 self.draw_stickers(self.current_stickers, frame, self.state)
                 self.draw_stickers(self.preview_stickers, frame, self.preview)
-
-            self.display_scanned_sides(frame)
-            self.display_current_mode(frame)
+                self.display_scanned_sides(frame)
 
             cv2.imshow('default', frame)
 
