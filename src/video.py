@@ -70,7 +70,7 @@ class Webcam:
             cv2.rectangle(
                 frame,
                 (x, y),
-                (x+PREVIEW_STICKER_STATE_TILE_SIZE, y+PREVIEW_STICKER_STATE_TILE_SIZE),
+                (x + PREVIEW_STICKER_STATE_TILE_SIZE, y + PREVIEW_STICKER_STATE_TILE_SIZE),
                 tuple([int(c) for c in state[index]]),
                 -1
             )
