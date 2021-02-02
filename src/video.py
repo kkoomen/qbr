@@ -10,6 +10,7 @@ import math
 
 SCAN_STICKERS_AREA_TILE_SIZE = 30
 PREVIEW_STICKER_STATE_TILE_SIZE = 32
+STICKER_CONTOUR_COLOR = (36, 255, 12)
 
 class Webcam:
 
@@ -30,7 +31,7 @@ class Webcam:
 
         self.cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-        self.width  = int(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.width = int(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
         self.calibrate_mode = False
@@ -130,8 +131,13 @@ class Webcam:
         return len(invalid_colors) == 0
 
     def draw_contours(self, frame, contours):
-        for index, (x, y, w, h) in enumerate(contours):
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (36, 255, 12), 2)
+        if self.calibrate_mode:
+            # Only show the center piece's contour
+            (x, y, w, h) = contours[4]
+            cv2.rectangle(frame, (x, y), (x + w, y + h), STICKER_CONTOUR_COLOR, 2)
+        else:
+            for index, (x, y, w, h) in enumerate(contours):
+                cv2.rectangle(frame, (x, y), (x + w, y + h), STICKER_CONTOUR_COLOR, 2)
 
     def update_state(self, frame, contours):
         # Get the average color value for the contour for every X
@@ -166,29 +172,19 @@ class Webcam:
         self.sides[center_color_name] = self.preview
         self.draw_stickers(self.preview_stickers, frame, self.preview)
 
+    def render_text(self, frame, text, pos, color=(255, 255, 255), size=0.5):
+        cv2.putText(frame, text, pos, cv2.FONT_HERSHEY_TRIPLEX, size, (0, 0, 0), 2, cv2.LINE_AA)
+        cv2.putText(frame, text, pos, cv2.FONT_HERSHEY_TRIPLEX, size, color, 1, cv2.LINE_AA)
+
     def display_scanned_sides(self, frame):
         text = 'scanned sides: {}/6'.format(len(self.sides.keys()))
-        cv2.putText(frame,
-                    text,
-                    (20, self.height - 20),
-                    cv2.FONT_HERSHEY_TRIPLEX,
-                    0.5,
-                    (255, 255, 255),
-                    1,
-                    cv2.LINE_AA)
+        self.render_text(frame, text, (20, self.height - 20))
 
     def display_current_color_to_calibrate(self, frame):
         if not self.done_calibrating:
             current_color = self.cube_sides[self.current_color_to_calibrate_index]
             text = 'Calibrating {} side'.format(current_color)
-            cv2.putText(frame,
-                        text,
-                        (int(self.width / 2) - 100, 40),
-                        cv2.FONT_HERSHEY_TRIPLEX,
-                        0.5,
-                        (255, 255, 255),
-                        1,
-                        cv2.LINE_AA)
+            self.render_text(frame, text, (int(self.width / 2) - 100, 40))
 
     def display_calibrated_colors(self, frame):
         for index, (color_name, color_bgr) in enumerate(self.calibrated_colors.items()):
@@ -200,17 +196,9 @@ class Webcam:
                 tuple([int(c) for c in color_bgr]),
                 -1
             )
-            cv2.putText(frame,
-                        color_name,
-                        (20, y + 18),
-                        cv2.FONT_HERSHEY_TRIPLEX,
-                        0.5,
-                        (255, 255, 255),
-                        1,
-                        cv2.LINE_AA)
+            self.render_text(frame, color_name, (20, y + 18))
 
     def reset_calibrate_mode(self):
-        self.calibrate_mode = False
         self.calibrated_colors = {}
         self.current_color_to_calibrate_index = 0
         self.done_calibrating = False
@@ -222,7 +210,7 @@ class Webcam:
 
         After hitting the space bar to confirm, the block below the
         current stickers shows the current state that you have.
-        This is show every user can see what the computer toke as input.
+        This to is show every user can see what the computer toke as input.
 
         :returns: dictionary
         """
@@ -234,18 +222,18 @@ class Webcam:
             if key == 27:
                 break
 
-            # Update the snapshot preview when space bar is pressed.
+            # Update the preview state when space bar is pressed.
             if key == 32 and not self.calibrate_mode:
                 self.update_preview(frame)
 
             # Press 's' to toggle scan mode.
             if key == ord('s'):
+                self.reset_calibrate_mode()
                 self.calibrate_mode = not self.calibrate_mode
 
             grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             blurredFrame = cv2.blur(grayFrame, (5, 5))
             cannyFrame = cv2.Canny(blurredFrame, 30, 60, 3)
-
             kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
             dilatedFrame = cv2.dilate(cannyFrame, kernel)
 
@@ -265,6 +253,7 @@ class Webcam:
                     if self.done_calibrating:
                         ColorDetector.set_cube_color_pallete(self.calibrated_colors)
                         self.reset_calibrate_mode()
+                        self.calibrate_mode = False
 
             if self.calibrate_mode:
                 self.display_current_color_to_calibrate(frame)
