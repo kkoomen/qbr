@@ -8,8 +8,9 @@ from colordetection import ColorDetector
 import numpy as np
 import math
 
-SCAN_STICKERS_AREA_TILE_SIZE = 30
-PREVIEW_STICKER_STATE_TILE_SIZE = 32
+STICKER_AREA_TILE_SIZE = 30
+STICKER_AREA_TILE_GAP = 4
+STICKER_AREA_OFFSET = 20
 STICKER_CONTOUR_COLOR = (36, 255, 12)
 TEXT_FONT = cv2.FONT_HERSHEY_TRIPLEX
 TEXT_SIZE = 0.5
@@ -19,17 +20,15 @@ class Webcam:
     def __init__(self):
         self.cube_sides = ['green', 'red', 'blue', 'orange', 'white', 'yellow']
         self.cam = cv2.VideoCapture(0)
-        self.current_stickers = self.get_sticker_coordinates('current')
-        self.preview_stickers = self.get_sticker_coordinates('preview')
         self.average_sticker_colors = {}
         self.sides = {}
 
-        self.preview = [(0,0,0), (0,0,0), (0,0,0),
-                        (0,0,0), (0,0,0), (0,0,0),
-                        (0,0,0), (0,0,0), (0,0,0)]
-        self.state   = [(0,0,0), (0,0,0), (0,0,0),
-                        (0,0,0), (0,0,0), (0,0,0),
-                        (0,0,0), (0,0,0), (0,0,0)]
+        self.snapshot = [(255,255,255), (255,255,255), (255,255,255),
+                         (255,255,255), (255,255,255), (255,255,255),
+                         (255,255,255), (255,255,255), (255,255,255)]
+        self.preview  = [(255,255,255), (255,255,255), (255,255,255),
+                         (255,255,255), (255,255,255), (255,255,255),
+                         (255,255,255), (255,255,255), (255,255,255)]
 
         self.cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
@@ -41,41 +40,41 @@ class Webcam:
         self.current_color_to_calibrate_index = 0
         self.done_calibrating = False
 
-    def get_sticker_coordinates(self, group):
-        """
-        Get sticker coordinates from a specific group.
-        These coordinates are the state previews in the top left corner.
-
-        Every array has 2 values: x and y.
-
-        :param group: The requested color type coordinates.
-        :returns: list
-        """
-        stickers = {
-            'current': [
-                [20, 20], [54, 20], [88, 20],
-                [20, 54], [54, 54], [88, 54],
-                [20, 88], [54, 88], [88, 88]
-            ],
-            'preview': [
-                [20, 130], [54, 130], [88, 130],
-                [20, 164], [54, 164], [88, 164],
-                [20, 198], [54, 198], [88, 198]
-            ]
-        }
-        return stickers[group]
-
-
-    def draw_stickers(self, stickers, frame, state):
+    def draw_stickers(self, frame, preview, offset_x, offset_y):
         """Draws the 9 current stickers in the frame."""
-        for index, (x, y) in enumerate(stickers):
-            cv2.rectangle(
-                frame,
-                (x, y),
-                (x + PREVIEW_STICKER_STATE_TILE_SIZE, y + PREVIEW_STICKER_STATE_TILE_SIZE),
-                tuple([int(c) for c in state[index]]),
-                -1
-            )
+        index = -1
+        for row in range(3):
+            for col in range(3):
+                index += 1
+                x1 = (offset_x + STICKER_AREA_TILE_SIZE * col) + STICKER_AREA_TILE_GAP * col
+                y1 = (offset_y + STICKER_AREA_TILE_SIZE * row) + STICKER_AREA_TILE_GAP * row
+                x2 = x1 + STICKER_AREA_TILE_SIZE
+                y2 = y1 + STICKER_AREA_TILE_SIZE
+
+                # shadow
+                cv2.rectangle(
+                    frame,
+                    (x1, y1),
+                    (x2, y2),
+                    (0, 0, 0),
+                    -1
+                )
+
+                # foreground color
+                cv2.rectangle(
+                    frame,
+                    (x1 + 1, y1 + 1),
+                    (x2 - 1, y2 - 1),
+                    tuple([int(c) for c in preview[index]]),
+                    -1
+                )
+
+    def draw_preview_stickers(self, frame):
+        self.draw_stickers(frame, self.preview, STICKER_AREA_OFFSET, STICKER_AREA_OFFSET)
+
+    def draw_snapshot_stickers(self, frame):
+        y = STICKER_AREA_TILE_SIZE * 3 + STICKER_AREA_TILE_GAP * 2 + STICKER_AREA_OFFSET * 2
+        self.draw_stickers(frame, self.snapshot, STICKER_AREA_OFFSET, y)
 
     def find_contours(self, frame):
         """Finds the contours of the 3x3."""
@@ -118,12 +117,12 @@ class Webcam:
         """
         Validate if the user scanned 9 colors for each side.
 
-        :param state list: The completely scanned cube state.
+        :param preview list: The completely scanned cube preview.
         :returns: boolean
         """
         color_count = {}
-        for side, state in self.sides.items():
-            for bgr in state:
+        for side, preview in self.sides.items():
+            for bgr in preview:
                 key = str(bgr)
                 if not key in color_count:
                     color_count[key] = 1
@@ -141,7 +140,7 @@ class Webcam:
             for index, (x, y, w, h) in enumerate(contours):
                 cv2.rectangle(frame, (x, y), (x + w, y + h), STICKER_CONTOUR_COLOR, 2)
 
-    def update_state(self, frame, contours):
+    def update_preview(self, frame, contours):
         # Get the average color value for the contour for every X
         # amount of frames to prevent flickering.
         max_average_rounds = 8
@@ -156,23 +155,23 @@ class Webcam:
                         sorted_items[key] = 1
                 most_common_color = max(sorted_items, key=lambda i: sorted_items[i])
                 self.average_sticker_colors[index] = []
-                self.state[index] = eval(most_common_color)
+                self.preview[index] = eval(most_common_color)
                 break
 
             roi = frame[y+7:y+h-7, x+14:x+w-14]
             avg_bgr = ColorDetector.get_dominant_color(roi)
             closest_color = ColorDetector.get_closest_color(avg_bgr)['color_bgr']
-            self.state[index] = closest_color
+            self.preview[index] = closest_color
             if index in self.average_sticker_colors:
                 self.average_sticker_colors[index].append(closest_color)
             else:
                 self.average_sticker_colors[index] = [closest_color]
 
-    def update_preview(self, frame):
-        self.preview = list(self.state)
-        center_color_name = ColorDetector.get_closest_color(self.preview[4])['color_name']
-        self.sides[center_color_name] = self.preview
-        self.draw_stickers(self.preview_stickers, frame, self.preview)
+    def update_snapshot(self, frame):
+        self.snapshot = list(self.preview)
+        center_color_name = ColorDetector.get_closest_color(self.snapshot[4])['color_name']
+        self.sides[center_color_name] = self.snapshot
+        self.draw_snapshot_stickers(frame)
 
     def render_text(self, frame, text, pos, color=(255, 255, 255), size=TEXT_SIZE):
         cv2.putText(frame, text, pos, TEXT_FONT, size, (0, 0, 0), 2, cv2.LINE_AA)
@@ -196,11 +195,11 @@ class Webcam:
 
     def display_calibrated_colors(self, frame):
         for index, (color_name, color_bgr) in enumerate(self.calibrated_colors.items()):
-            y = int(SCAN_STICKERS_AREA_TILE_SIZE * (index + 1))
+            y = int(STICKER_AREA_TILE_SIZE * (index + 1))
             cv2.rectangle(
                 frame,
                 (90, y),
-                (90 + SCAN_STICKERS_AREA_TILE_SIZE, y + SCAN_STICKERS_AREA_TILE_SIZE),
+                (90 + STICKER_AREA_TILE_SIZE, y + STICKER_AREA_TILE_SIZE),
                 tuple([int(c) for c in color_bgr]),
                 -1
             )
@@ -214,10 +213,10 @@ class Webcam:
     def run(self):
         """
         Open up the webcam and scans the 9 regions in the center
-        and show a preview in the left upper corner.
+        and show a snapshot in the left upper corner.
 
         After hitting the space bar to confirm, the block below the
-        current stickers shows the current state that you have.
+        current stickers shows the current preview that you have.
         This to is show every user can see what the computer toke as input.
 
         :returns: dictionary
@@ -230,9 +229,9 @@ class Webcam:
             if key == 27:
                 break
 
-            # Update the preview state when space bar is pressed.
+            # Update the snapshot preview when space bar is pressed.
             if key == 32 and not self.calibrate_mode:
-                self.update_preview(frame)
+                self.update_snapshot(frame)
 
             # Press 's' to toggle scan mode.
             if key == ord('s'):
@@ -249,7 +248,7 @@ class Webcam:
             if len(contours) == 9:
                 self.draw_contours(frame, contours)
                 if not self.calibrate_mode:
-                    self.update_state(frame, contours)
+                    self.update_preview(frame, contours)
                 elif key == 32 and self.done_calibrating == False:
                     current_color = self.cube_sides[self.current_color_to_calibrate_index]
                     (x, y, w, h) = contours[4]
@@ -265,8 +264,8 @@ class Webcam:
                 self.display_current_color_to_calibrate(frame)
                 self.display_calibrated_colors(frame)
             else:
-                self.draw_stickers(self.current_stickers, frame, self.state)
-                self.draw_stickers(self.preview_stickers, frame, self.preview)
+                self.draw_preview_stickers(frame)
+                self.draw_snapshot_stickers(frame)
                 self.display_scanned_sides(frame)
 
             cv2.imshow('default', frame)
@@ -283,8 +282,8 @@ class Webcam:
 
         # Convert all the sides and their BGR colors to cube notation.
         notation = dict(self.sides)
-        for side, state in notation.items():
-            for sticker_index, bgr in enumerate(state):
+        for side, preview in notation.items():
+            for sticker_index, bgr in enumerate(preview):
                 notation[side][sticker_index] = ColorDetector.convert_bgr_to_notation(bgr)
 
         # Join all the sides together into one single string.
