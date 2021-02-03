@@ -22,6 +22,7 @@ class ColorDetection:
         self.cube_color_palette = self.prominent_color_palette
 
     def get_prominent_color(self, bgr):
+        """Get the prominent color equivalent of the given bgr color."""
         for color_name, color_bgr in self.cube_color_palette.items():
             if tuple([int(c) for c in bgr]) == color_bgr:
                 return self.prominent_color_palette[color_name]
@@ -47,9 +48,10 @@ class ColorDetection:
 
     def get_closest_color(self, bgr):
         """
-        Get the color name of a BGR color using CIEDE2000 distance.
+        Get the closest color of a BGR color using CIEDE2000 distance.
 
-        :param bgr tuple: The BGR color to convert.
+        :param bgr tuple: The BGR color to use.
+        :returns: dict
         """
         lab = bgr2lab(bgr)
         distances = []
@@ -68,6 +70,7 @@ class ColorDetection:
         The BGR color must be normalized first by the get_closest_color method.
 
         :param bgr tuple: The BGR values to convert.
+        :returns: str
         """
         notations = {
             'green' : 'F',
@@ -81,6 +84,11 @@ class ColorDetection:
         return notations[color_name]
 
     def set_cube_color_pallete(self, palette):
+        """
+        Set a new cube color palette. The palette is being used when the user is
+        scanning his cube in solve mode by matching the scanned colors against
+        this palette.
+        """
         self.cube_color_palette = palette
         for side, bgr in self.cube_color_palette.items():
             self.cube_color_palette[side] = tuple([int(c) for c in bgr])

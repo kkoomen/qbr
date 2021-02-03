@@ -17,6 +17,7 @@ class Qbr:
         self.language = (language[0]) if isinstance(language, list) else language
 
     def run(self):
+        """The main function that will run the Qbr program."""
         print('SCANNING GUIDE')
         print('- Make sure to start by scanning by having the green-centered side facing the camera and having the white-centered side on top.')
         print('- Start by scanning the green, red, blue and orange sides. The order in which these colors are scanned does not matter.')
@@ -52,16 +53,26 @@ class Qbr:
 
 
 if __name__ == '__main__':
-    # Define argument parser.
+    # Define the application arguments.
     parser = argparse.ArgumentParser()
-    parser.add_argument('-n', '--normalize', default=False, action='store_true',
-            help='Shows the solution normalized. For example "R2" would be: \
-                    "Turn the right side 180 degrees".')
-    parser.add_argument('-l', '--language', nargs=1, default='en',
-            help='You can pass in a single \
-                    argument which will be the language for the normalization output. \
-                    Default is "en".')
+    parser.add_argument(
+        '-n',
+        '--normalize',
+        default=False,
+        action='store_true',
+        help='Shows the solution normalized. For example "R2" would be: \
+              "Turn the right side 180 degrees".'
+    )
+    parser.add_argument(
+        '-l',
+        '--language',
+        nargs=1,
+        default='en',
+        help='You can pass in a single \
+              argument which will be the language for the normalization output. \
+              Default is "en".'
+    )
     args = parser.parse_args()
 
-    # Run Qbr with its arguments.
+    # Run Qbr with all arguments.
     Qbr(args.normalize, args.language).run()

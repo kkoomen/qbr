@@ -24,12 +24,12 @@ class Webcam:
         self.average_sticker_colors = {}
         self.sides = {}
 
-        self.snapshot = [(255,255,255), (255,255,255), (255,255,255),
-                         (255,255,255), (255,255,255), (255,255,255),
-                         (255,255,255), (255,255,255), (255,255,255)]
-        self.preview  = [(255,255,255), (255,255,255), (255,255,255),
-                         (255,255,255), (255,255,255), (255,255,255),
-                         (255,255,255), (255,255,255), (255,255,255)]
+        self.snapshot_state = [(255,255,255), (255,255,255), (255,255,255),
+                               (255,255,255), (255,255,255), (255,255,255),
+                               (255,255,255), (255,255,255), (255,255,255)]
+        self.preview_state  = [(255,255,255), (255,255,255), (255,255,255),
+                               (255,255,255), (255,255,255), (255,255,255),
+                               (255,255,255), (255,255,255), (255,255,255)]
 
         self.cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
@@ -42,7 +42,7 @@ class Webcam:
         self.done_calibrating = False
 
     def draw_stickers(self, frame, stickers, offset_x, offset_y):
-        """Draws the 9 current stickers in the frame."""
+        """Draws the given stickers onto the given frame."""
         index = -1
         for row in range(3):
             for col in range(3):
@@ -71,14 +71,16 @@ class Webcam:
                 )
 
     def draw_preview_stickers(self, frame):
-        self.draw_stickers(frame, self.preview, STICKER_AREA_OFFSET, STICKER_AREA_OFFSET)
+        """Draw the current preview state onto the given frame."""
+        self.draw_stickers(frame, self.preview_state, STICKER_AREA_OFFSET, STICKER_AREA_OFFSET)
 
     def draw_snapshot_stickers(self, frame):
+        """Draw the current snapshot state onto the given frame."""
         y = STICKER_AREA_TILE_SIZE * 3 + STICKER_AREA_TILE_GAP * 2 + STICKER_AREA_OFFSET * 2
-        self.draw_stickers(frame, self.snapshot, STICKER_AREA_OFFSET, y)
+        self.draw_stickers(frame, self.snapshot_state, STICKER_AREA_OFFSET, y)
 
     def find_contours(self, frame):
-        """Finds the contours of the 3x3."""
+        """Finds the contours of a 3x3x3 cube."""
         contours, hierarchy = cv2.findContours(frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         final_contours = []
         for contour in contours:
@@ -115,12 +117,7 @@ class Webcam:
         return sorted_contours
 
     def scanned_successfully(self):
-        """
-        Validate if the user scanned 9 colors for each side.
-
-        :param preview list: The completely scanned cube preview.
-        :returns: boolean
-        """
+        """Validate if the user scanned 9 colors for each side."""
         color_count = {}
         for side, preview in self.sides.items():
             for bgr in preview:
@@ -133,17 +130,20 @@ class Webcam:
         return len(invalid_colors) == 0
 
     def draw_contours(self, frame, contours):
+        """Draw contours onto the given frame."""
         if self.calibrate_mode:
-            # Only show the center piece's contour
+            # Only show the center piece's contour.
             (x, y, w, h) = contours[4]
             cv2.rectangle(frame, (x, y), (x + w, y + h), STICKER_CONTOUR_COLOR, 2)
         else:
             for index, (x, y, w, h) in enumerate(contours):
                 cv2.rectangle(frame, (x, y), (x + w, y + h), STICKER_CONTOUR_COLOR, 2)
 
-    def update_preview(self, frame, contours):
-        # Get the average color value for the contour for every X
-        # amount of frames to prevent flickering.
+    def update_preview_state(self, frame, contours):
+        """
+        Get the average color value for the contour for every X amount of frames
+        to prevent flickering and more precise results.
+        """
         max_average_rounds = 8
         for index, (x, y, w, h) in enumerate(contours):
             if index in self.average_sticker_colors and len(self.average_sticker_colors[index]) == max_average_rounds:
@@ -156,33 +156,37 @@ class Webcam:
                         sorted_items[key] = 1
                 most_common_color = max(sorted_items, key=lambda i: sorted_items[i])
                 self.average_sticker_colors[index] = []
-                self.preview[index] = eval(most_common_color)
+                self.preview_state[index] = eval(most_common_color)
                 break
 
             roi = frame[y+7:y+h-7, x+14:x+w-14]
             avg_bgr = ColorDetector.get_dominant_color(roi)
             closest_color = ColorDetector.get_closest_color(avg_bgr)['color_bgr']
-            self.preview[index] = closest_color
+            self.preview_state[index] = closest_color
             if index in self.average_sticker_colors:
                 self.average_sticker_colors[index].append(closest_color)
             else:
                 self.average_sticker_colors[index] = [closest_color]
 
-    def update_snapshot(self, frame):
-        self.snapshot = list(self.preview)
-        center_color_name = ColorDetector.get_closest_color(self.snapshot[4])['color_name']
-        self.sides[center_color_name] = self.snapshot
+    def update_snapshot_state(self, frame):
+        """Update the snapshot state based on the current preview state."""
+        self.snapshot_state = list(self.preview_state)
+        center_color_name = ColorDetector.get_closest_color(self.snapshot_state[4])['color_name']
+        self.sides[center_color_name] = self.snapshot_state
         self.draw_snapshot_stickers(frame)
 
     def render_text(self, frame, text, pos, color=(255, 255, 255), size=TEXT_SIZE):
+        """Render text with a shadow."""
         cv2.putText(frame, text, pos, TEXT_FONT, size, (0, 0, 0), 2, cv2.LINE_AA)
         cv2.putText(frame, text, pos, TEXT_FONT, size, color, 1, cv2.LINE_AA)
 
     def display_scanned_sides(self, frame):
+        """Display how many sides are scanned by the user."""
         text = 'scanned sides: {}/6'.format(len(self.sides.keys()))
         self.render_text(frame, text, (20, self.height - 20))
 
     def display_current_color_to_calibrate(self, frame):
+        """Display the current side's color that needs to be calibrated."""
         if self.done_calibrating:
             messages = [
                 'Calibrated successfully',
@@ -199,6 +203,7 @@ class Webcam:
             self.render_text(frame, text, (int(self.width / 2 - textsize[0] / 2), 40))
 
     def display_calibrated_colors(self, frame):
+        """Display all the colors that are calibrated while in calibrate mode."""
         for index, (color_name, color_bgr) in enumerate(self.calibrated_colors.items()):
             y = int(STICKER_AREA_TILE_SIZE * (index + 1))
             cv2.rectangle(
@@ -211,20 +216,16 @@ class Webcam:
             self.render_text(frame, color_name, (20, y + 18))
 
     def reset_calibrate_mode(self):
+        """Reset calibrate mode variables."""
         self.calibrated_colors = {}
         self.current_color_to_calibrate_index = 0
         self.done_calibrating = False
 
     def run(self):
         """
-        Open up the webcam and scans the 9 regions in the center
-        and show a snapshot in the left upper corner.
+        Open up the webcam and present the user with the Qbr user interface.
 
-        After hitting the space bar to confirm, the block below the
-        current stickers shows the current preview that you have.
-        This to is show every user can see what the computer toke as input.
-
-        :returns: dictionary
+        Returns a string of the scanned state in rubik's cube notation.
         """
         while True:
             _, frame = self.cam.read()
@@ -236,7 +237,7 @@ class Webcam:
 
             # Update the snapshot when space bar is pressed.
             if key == 32 and not self.calibrate_mode:
-                self.update_snapshot(frame)
+                self.update_snapshot_state(frame)
 
             # Toggle calibrate mode.
             if key == ord(CALIBRATE_MODE_KEY):
@@ -253,7 +254,7 @@ class Webcam:
             if len(contours) == 9:
                 self.draw_contours(frame, contours)
                 if not self.calibrate_mode:
-                    self.update_preview(frame, contours)
+                    self.update_preview_state(frame, contours)
                 elif key == 32 and self.done_calibrating == False:
                     current_color = self.cube_sides[self.current_color_to_calibrate_index]
                     (x, y, w, h) = contours[4]

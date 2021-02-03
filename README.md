@@ -2,9 +2,26 @@
 
 A rubik's cube solver written in python 3 using OpenCV via your webcam.
 
+### Solve mode
+
+![solve mode](./demo-solve-mode.jpg)
+
+### Calibrate mode
+
+Isn't the default color detection not working for you? Use the *calibrate mode*
+to Qbr be familiar with your cube's color scheme. If your room has proper light
+then this will give you a 99% guarantee that you will get proper color detection.
+
+Simply follow the on-screen instructions and you're ready to go.
+
+![calibrate mode](./demo-calibrate-mode.jpg)
+![calibrate mode success](./demo-calibrate-mode-success.jpg)
+
 # Table of Contents
 
 - [Qbr](#qbr)
+    + [Solve mode](#solve-mode)
+    + [Calibrate mode](#calibrate-mode)
 - [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Installation](#installation)
@@ -12,8 +29,9 @@ A rubik's cube solver written in python 3 using OpenCV via your webcam.
     + [The first 9-stickers in the upper left corner](#the-first-9-stickers-in-the-upper-left-corner)
     + [The second 9-sticker display below the one in the upper left corner](#the-second-9-sticker-display-below-the-one-in-the-upper-left-corner)
     + [Amount of sides scanned](#amount-of-sides-scanned)
+    + [Calibrate mode](#calibrate-mode-1)
 - [Getting the solution](#getting-the-solution)
-    + [Keybindings](#keybindings)
+- [Keybindings](#keybindings)
 - [Paramaters](#paramaters)
 - [Example runs](#example-runs)
 - [Inspirational sources](#inspirational-sources)
@@ -21,18 +39,12 @@ A rubik's cube solver written in python 3 using OpenCV via your webcam.
 
 # Introduction
 
-![demo](demo.jpg)
-
 The idea to create this came personally to mind when I started solving rubik's
-cubes.  My personal record is 7.90 seconds, but there were already so many
+cubes. My personal record is 7.90 seconds, but there were already so many
 professional programmers around the world who created robots that solve a
 rubik's cube in an ETA of 5 seconds and since 2016 in 1 second
 ([link](https://www.youtube.com/watch?v=ixTddQQ2Hs4)).
 That inspired me to create my own. I started using images only and eventually switched to webcam.
-
-Color detection might be a problem if you:
-- Have colors that are not easy to distinguish
-- Do not have the follow color scheme: white, yellow, red, orange, blue, green.
 
 # Installation
 
@@ -54,35 +66,47 @@ $ ./src/qbr.py
 
 This opens a webcam interface where you see basically the above photo.
 
-There have 3 things:
+There are a few things you have to know:
 
 ### The first 9-stickers in the upper left corner
 
-These will update immediately and display how the program has detected the colors.
+This is preview mode. These will update immediately and display how Qbr has
+detected the colors.
 
 ### The second 9-sticker display below the one in the upper left corner
 
-When pressing `SPACE` it will update this state in order to show you what state
-it has saved. You can press space as many times as you'd like if it has been
-detected wrong.
+This is a snapshot state. When pressing `SPACE` it will create a snapshot in
+order to show you what state it has saved. You can press `SPACE` as many times
+as you'd like if it has been detected wrong.
 
 ### Amount of sides scanned
 
 In the bottom left corner is shown the amount of sides scanned. This is so you
 know if you've scanned in all sides before pressing `ESC`.
 
+### Calibrate mode
+
+Press `c` to go into calibrate mode in order to let Qbr be familiar with your
+cube's color scheme. Simply follow the on-screen instructions and you're ready
+to go.
+
+Tip: If you've scanned wrong, simple go out of calibrate mode by pressing `c`
+and go back into calibrate by pressing `c` again.
+
 # Getting the solution
 
 Qbr checks if you have filled in all 6 sides when pressing `ESC`. If so, it'll
-solve it if you've scanned it in correctly.
+calculate a solution if you've scanned it correctly.
 
 You should now see a solution (or an error if you did it wrong).
 
-### Keybindings
+# Keybindings
 
 - `SPACE` for saving the current state
 
-- `ESC` to quit
+- `ESC` quit
+
+- `c` toggle calibrate mode
 
 # Paramaters
 
@@ -162,5 +186,3 @@ https://github.com/dwalton76/rubiks-color-resolver
 # License
 
 Qbr is licensed under the MIT License.
-
-Copyright (c) Kim Koomen.

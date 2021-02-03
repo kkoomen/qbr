@@ -67,7 +67,7 @@ def bgr2lab(inputColor):
 
 # Copyright to https://github.com/lovro-i/CIEDE2000.
 def ciede2000(Lab_1, Lab_2):
-    '''Calculates CIEDE2000 color distance between two CIE L*a*b* colors'''
+    """Calculates CIEDE2000 color distance between two CIE L*a*b* colors"""
     C_25_7 = 6103515625 # 25**7
 
     L1, a1, b1 = Lab_1[0], Lab_1[1], Lab_1[2]
