@@ -12,6 +12,7 @@ STICKER_AREA_TILE_SIZE = 30
 STICKER_AREA_TILE_GAP = 4
 STICKER_AREA_OFFSET = 20
 STICKER_CONTOUR_COLOR = (36, 255, 12)
+CALIBRATE_MODE_KEY = 'c'
 TEXT_FONT = cv2.FONT_HERSHEY_TRIPLEX
 TEXT_SIZE = 0.5
 
@@ -183,7 +184,10 @@ class Webcam:
 
     def display_current_color_to_calibrate(self, frame):
         if self.done_calibrating:
-            messages = ['Calibrated successfully', 'Press s to quit calibrate mode']
+            messages = [
+                'Calibrated successfully',
+                'Press {} to quit calibrate mode'.format(CALIBRATE_MODE_KEY)
+            ]
             for index, text in enumerate(messages):
                 textsize = cv2.getTextSize(text, TEXT_FONT, TEXT_SIZE, 1)[0]
                 y = 40 + 20 * index
@@ -233,8 +237,8 @@ class Webcam:
             if key == 32 and not self.calibrate_mode:
                 self.update_snapshot(frame)
 
-            # Press 'c' to toggle calibrate mode.
-            if key == ord('c'):
+            # Toggle calibrate mode.
+            if key == ord(CALIBRATE_MODE_KEY):
                 self.reset_calibrate_mode()
                 self.calibrate_mode = not self.calibrate_mode
 
