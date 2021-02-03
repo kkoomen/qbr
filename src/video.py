@@ -195,7 +195,8 @@ class Webcam:
         else:
             current_color = self.cube_sides[self.current_color_to_calibrate_index]
             text = 'Calibrating {} side'.format(current_color)
-            self.render_text(frame, text, (int(self.width / 2) - 100, 40))
+            textsize = cv2.getTextSize(text, TEXT_FONT, TEXT_SIZE, 1)[0]
+            self.render_text(frame, text, (int(self.width / 2 - textsize[0] / 2), 40))
 
     def display_calibrated_colors(self, frame):
         for index, (color_name, color_bgr) in enumerate(self.calibrated_colors.items()):
