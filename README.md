@@ -87,6 +87,10 @@ know if you've scanned in all sides before pressing `ESC`.
 
 ### Calibrate mode
 
+The default color scheme are the most prominent colors for white, yellow, red,
+orange, blue and green. If this can't detect your cube its colors properly then
+you can use calibrate mode.
+
 Press `c` to go into calibrate mode in order to let Qbr be familiar with your
 cube's color scheme. Simply follow the on-screen instructions and you're ready
 to go.
