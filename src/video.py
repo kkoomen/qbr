@@ -79,34 +79,91 @@ class Webcam:
         y = STICKER_AREA_TILE_SIZE * 3 + STICKER_AREA_TILE_GAP * 2 + STICKER_AREA_OFFSET * 2
         self.draw_stickers(frame, self.snapshot_state, STICKER_AREA_OFFSET, y)
 
-    def find_contours(self, frame):
-        """Finds the contours of a 3x3x3 cube."""
-        contours, hierarchy = cv2.findContours(frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    def find_contours(self, dilatedFrame):
+        """Find the contours of a 3x3x3 cube."""
+        contours, hierarchy = cv2.findContours(dilatedFrame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         final_contours = []
+
+        # Step 1/4: filter all contours to only those that are square-ish shapes.
         for contour in contours:
             perimeter = cv2.arcLength(contour, True)
             approx = cv2.approxPolyDP(contour, 0.1 * perimeter, True)
             if len (approx) == 4:
                 area = cv2.contourArea(contour)
                 (x, y, w, h) = cv2.boundingRect(approx)
+
                 # Find aspect ratio of boundary rectangle around the countours.
                 ratio = w / float(h)
+
                 # Check if contour is close to a square.
                 if ratio >= 0.8 and ratio <= 1.2 and w >= 30 and w <= 60 and area / (w * h) > 0.4:
                     final_contours.append((x, y, w, h))
 
-        # Remove those than have not that much neighbours.
-        for contour in final_contours:
-            neighbors = 0
+        # Step 2/4: Find the contour that has 9 neighbors (including itself)
+        # and return all of those neighbors.
+        found = False
+        contour_neighbors = {}
+        for index, contour in enumerate(final_contours):
             (x, y, w, h) = contour
-            for (x2, y2, w2, h2) in final_contours:
-                if abs(x - x2) < (w * 3.5) and abs(y - y2) < (h * 3.5):
-                    neighbors += 1
-            if neighbors < 5:
-                final_contours.remove(contour)
+            contour_neighbors[index] = []
+            center_x = x + w / 2
+            center_y = y + h / 2
+            radius = 1.5
+            neighbor_positions = [
+                # top left
+                [(center_x - w * radius), (center_y - h * radius)],
+
+                # top middle
+                [center_x, (center_y - h * radius)],
+
+                # top right
+                [(center_x + w * radius), (center_y - h * radius)],
+
+                # middle left
+                [(center_x - w * radius), center_y],
+
+                # center
+                [center_x, center_y],
+
+                # middle right
+                [(center_x + w * radius), center_y],
+
+                # bottom left
+                [(center_x - w * radius), (center_y + h * radius)],
+
+                # bottom middle
+                [center_x, (center_y + h * radius)],
+
+                # bottom right
+                [(center_x + w * radius), (center_y + h * radius)],
+            ]
+
+            for neighbor in final_contours:
+                (x2, y2, w2, h2) = neighbor
+                for (x3, y3) in neighbor_positions:
+                    if (x2 < x3 and y2 < y3) and (x2 + w2 > x3 and y2 + h2 > y3):
+                        contour_neighbors[index].append(neighbor)
+
+        # Step 3/4: Now that we know how many neighbors all contours have, we'll
+        # loop over them and find the contour that has 9 neighbors, which
+        # includes itself. This is the center piece of the cube. If we come
+        # across it, then the 'neighbors' are actually all the contours we're
+        # looking for.
+        for (contour, neighbors) in contour_neighbors.items():
+            if len(neighbors) == 9:
+                found = True
+                final_contours = neighbors
+                break
+
+        if not found:
+            return []
+
+        # Step 4/4: When we reached this part of the code we found a cube-like
+        # contour. The code below will sort all the contours on their X and Y
+        # values from the top-left to the bottom-right.
 
         # Sort contours on the y-value first.
-        y_sorted = sorted(final_contours[:9], key=lambda item: item[1])
+        y_sorted = sorted(final_contours, key=lambda item: item[1])
 
         # Split into 3 rows and sort each row on the x-value.
         top_row = sorted(y_sorted[0:3], key=lambda item: item[0])
