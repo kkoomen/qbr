@@ -95,6 +95,10 @@ Press `c` to go into calibrate mode in order to let Qbr be familiar with your
 cube's color scheme. Simply follow the on-screen instructions and you're ready
 to go.
 
+Note: Your calibrated settings are automatically saved after you've calibrated
+your cube successfully. The next time you start Qbr it will automatically load
+it.
+
 Tip: If you've scanned wrong, simple go out of calibrate mode by pressing `c`
 and go back into calibrate by pressing `c` again.
 
