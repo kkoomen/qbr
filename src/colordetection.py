@@ -21,11 +21,9 @@ class ColorDetection:
             'yellow': (0, 255, 255)
         }
 
-        self.cube_color_palette = tuple(
-            config.get_settings(
-                CUBE_PALETTE,
-                self.prominent_color_palette
-            )
+        self.cube_color_palette = config.get_settings(
+            CUBE_PALETTE,
+            self.prominent_color_palette
         )
 
     def get_prominent_color(self, bgr):
