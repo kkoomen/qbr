@@ -7,6 +7,7 @@ import cv2
 from colordetection import color_detector
 import numpy as np
 import math
+from config import config, CUBE_PALETTE
 
 STICKER_AREA_TILE_SIZE = 30
 STICKER_AREA_TILE_GAP = 4
@@ -333,6 +334,7 @@ class Webcam:
                     self.done_calibrating = self.current_color_to_calibrate_index == len(self.cube_sides)
                     if self.done_calibrating:
                         color_detector.set_cube_color_pallete(self.calibrated_colors)
+                        config.set_setting(CUBE_PALETTE, color_detector.cube_color_palette)
 
             if self.calibrate_mode:
                 self.display_current_color_to_calibrate(frame)

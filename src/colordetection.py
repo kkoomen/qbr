@@ -6,6 +6,7 @@
 import numpy as np
 import cv2
 from helpers import ciede2000, bgr2lab
+from config import config, CUBE_PALETTE
 
 
 class ColorDetection:
@@ -19,7 +20,13 @@ class ColorDetection:
             'white' : (255, 255, 255),
             'yellow': (0, 255, 255)
         }
-        self.cube_color_palette = self.prominent_color_palette
+
+        self.cube_color_palette = tuple(
+            config.get_settings(
+                CUBE_PALETTE,
+                self.prominent_color_palette
+            )
+        )
 
     def get_prominent_color(self, bgr):
         """Get the prominent color equivalent of the given bgr color."""
