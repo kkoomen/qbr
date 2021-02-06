@@ -93,4 +93,4 @@ class ColorDetection:
         for side, bgr in self.cube_color_palette.items():
             self.cube_color_palette[side] = tuple([int(c) for c in bgr])
 
-ColorDetector = ColorDetection()
+color_detector = ColorDetection()

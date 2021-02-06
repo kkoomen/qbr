@@ -4,7 +4,7 @@
 
 
 import cv2
-from colordetection import ColorDetector
+from colordetection import color_detector
 import numpy as np
 import math
 
@@ -66,7 +66,7 @@ class Webcam:
                     frame,
                     (x1 + 1, y1 + 1),
                     (x2 - 1, y2 - 1),
-                    ColorDetector.get_prominent_color(stickers[index]),
+                    color_detector.get_prominent_color(stickers[index]),
                     -1
                 )
 
@@ -109,6 +109,14 @@ class Webcam:
             center_x = x + w / 2
             center_y = y + h / 2
             radius = 1.5
+
+            # Create 9 positions for the current contour which are the
+            # neighbors. We'll use this to check how many neighbors each contour
+            # has. The only way all of these can match is if the current contour
+            # is the center of the cube. If we found the center, we also know
+            # all the neighbors, thus knowing all the contours and thus knowing
+            # this shape can be considered a 3x3x3 cube. When we've found those
+            # contours, we sort them and return them.
             neighbor_positions = [
                 # top left
                 [(center_x - w * radius), (center_y - h * radius)],
@@ -141,6 +149,9 @@ class Webcam:
             for neighbor in final_contours:
                 (x2, y2, w2, h2) = neighbor
                 for (x3, y3) in neighbor_positions:
+                    # The neighbor_positions are located in the center of each
+                    # contour instead of top-left corner.
+                    # logic: (top left < center pos) and (bottom right > center pos)
                     if (x2 < x3 and y2 < y3) and (x2 + w2 > x3 and y2 + h2 > y3):
                         contour_neighbors[index].append(neighbor)
 
@@ -217,8 +228,8 @@ class Webcam:
                 break
 
             roi = frame[y+7:y+h-7, x+14:x+w-14]
-            avg_bgr = ColorDetector.get_dominant_color(roi)
-            closest_color = ColorDetector.get_closest_color(avg_bgr)['color_bgr']
+            avg_bgr = color_detector.get_dominant_color(roi)
+            closest_color = color_detector.get_closest_color(avg_bgr)['color_bgr']
             self.preview_state[index] = closest_color
             if index in self.average_sticker_colors:
                 self.average_sticker_colors[index].append(closest_color)
@@ -228,7 +239,7 @@ class Webcam:
     def update_snapshot_state(self, frame):
         """Update the snapshot state based on the current preview state."""
         self.snapshot_state = list(self.preview_state)
-        center_color_name = ColorDetector.get_closest_color(self.snapshot_state[4])['color_name']
+        center_color_name = color_detector.get_closest_color(self.snapshot_state[4])['color_name']
         self.sides[center_color_name] = self.snapshot_state
         self.draw_snapshot_stickers(frame)
 
@@ -316,12 +327,12 @@ class Webcam:
                     current_color = self.cube_sides[self.current_color_to_calibrate_index]
                     (x, y, w, h) = contours[4]
                     roi = frame[y+7:y+h-7, x+14:x+w-14]
-                    avg_bgr = ColorDetector.get_dominant_color(roi)
+                    avg_bgr = color_detector.get_dominant_color(roi)
                     self.calibrated_colors[current_color] = avg_bgr
                     self.current_color_to_calibrate_index += 1
                     self.done_calibrating = self.current_color_to_calibrate_index == len(self.cube_sides)
                     if self.done_calibrating:
-                        ColorDetector.set_cube_color_pallete(self.calibrated_colors)
+                        color_detector.set_cube_color_pallete(self.calibrated_colors)
 
             if self.calibrate_mode:
                 self.display_current_color_to_calibrate(frame)
@@ -347,7 +358,7 @@ class Webcam:
         notation = dict(self.sides)
         for side, preview in notation.items():
             for sticker_index, bgr in enumerate(preview):
-                notation[side][sticker_index] = ColorDetector.convert_bgr_to_notation(bgr)
+                notation[side][sticker_index] = color_detector.convert_bgr_to_notation(bgr)
 
         # Join all the sides together into one single string.
         # Order must be URFDLB (white, red, green, yellow, orange, blue)
