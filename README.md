@@ -1,6 +1,6 @@
 # Qbr
 
-A rubik's cube solver written in python 3 using OpenCV via your webcam.
+A webcam-based 3x3x3 rubik's cube solver written in Python 3 and OpenCV.
 
 ### Solve mode
 
@@ -9,9 +9,9 @@ A rubik's cube solver written in python 3 using OpenCV via your webcam.
 ### Calibrate mode
 
 Isn't the default color detection not working for you? Use the **calibrate
-mode** to Qbr be familiar with your cube's color scheme. If your room has proper
-light then this will give you a 99% guarantee that you will get proper color
-detection.
+mode** to let Qbr be familiar with your cube's color scheme. If your room has
+proper light then this will give you a 99.9% guarantee that your colors will
+be detected properly.
 
 Simply follow the on-screen instructions and you're ready to go.
 
@@ -27,8 +27,8 @@ Simply follow the on-screen instructions and you're ready to go.
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
-    + [The first 9-stickers in the upper left corner](#the-first-9-stickers-in-the-upper-left-corner)
-    + [The second 9-sticker display below the one in the upper left corner](#the-second-9-sticker-display-below-the-one-in-the-upper-left-corner)
+    + [The first 9-sticker display in the upper left corner](#the-first-9-sticker-display-in-the-upper-left-corner)
+    + [The second 9-sticker display in the upper left corner](#the-second-9-sticker-display-in-the-upper-left-corner)
     + [Amount of sides scanned](#amount-of-sides-scanned)
     + [Calibrate mode](#calibrate-mode-1)
 - [Getting the solution](#getting-the-solution)
@@ -45,7 +45,8 @@ cubes. My personal record is 7.90 seconds, but there were already so many
 professional programmers around the world who created robots that solve a
 rubik's cube in an ETA of 5 seconds and since 2016 in 1 second
 ([link](https://www.youtube.com/watch?v=ixTddQQ2Hs4)).
-That inspired me to create my own. I started using images only and eventually switched to webcam.
+That inspired me to create my own. I started using images only and eventually
+switched to webcam.
 
 # Installation
 
@@ -65,16 +66,14 @@ Run Qbr:
 $ ./src/qbr.py
 ```
 
-This opens a webcam interface where you see basically the above photo.
+This opens a webcam interface with the following things:
 
-There are a few things you have to know:
-
-### The first 9-stickers in the upper left corner
+### The first 9-sticker display in the upper left corner
 
 This is preview mode. These will update immediately and display how Qbr has
 detected the colors.
 
-### The second 9-sticker display below the one in the upper left corner
+### The second 9-sticker display in the upper left corner
 
 This is a snapshot state. When pressing `SPACE` it will create a snapshot in
 order to show you what state it has saved. You can press `SPACE` as many times
