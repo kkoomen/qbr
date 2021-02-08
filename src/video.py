@@ -103,6 +103,10 @@ class Webcam:
                 if ratio >= 0.8 and ratio <= 1.2 and w >= 30 and w <= 60 and area / (w * h) > 0.4:
                     final_contours.append((x, y, w, h))
 
+        # Return early if we didn't found 9 or more contours.
+        if len(final_contours) < 9:
+            return []
+
         # Step 2/4: Find the contour that has 9 neighbors (including itself)
         # and return all of those neighbors.
         found = False
@@ -349,10 +353,12 @@ class Webcam:
                 self.reset_calibrate_mode()
                 self.calibrate_mode = not self.calibrate_mode
 
+            cv2.normalize(frame, frame, alpha=0, beta=(255 * 1.5), norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
             grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            blurredFrame = cv2.blur(grayFrame, (5, 5))
-            cannyFrame = cv2.Canny(blurredFrame, 30, 60, 3)
-            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
+            denoisedFrame = cv2.fastNlMeansDenoising(grayFrame, None, 10, 4, 4)
+            blurredFrame = cv2.blur(denoisedFrame, (5, 5))
+            cannyFrame = cv2.Canny(blurredFrame, 30, 80, 3)
+            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
             dilatedFrame = cv2.dilate(cannyFrame, kernel)
 
             contours = self.find_contours(dilatedFrame)
