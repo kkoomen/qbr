@@ -266,12 +266,12 @@ class Webcam:
         ft2 = self.get_freetype2_font()
         return ft2.getTextSize(text, size, thickness=-1)
 
-    def display_scanned_sides(self, frame):
+    def draw_scanned_sides(self, frame):
         """Display how many sides are scanned by the user."""
         text = i18n.t('scannedSides', num=len(self.sides.keys()))
         self.render_text(frame, text, (20, self.height - 20), bottomLeftOrigin=True)
 
-    def display_current_color_to_calibrate(self, frame):
+    def draw_current_color_to_calibrate(self, frame):
         """Display the current side's color that needs to be calibrated."""
         y_offset = 20
         font_size = int(TEXT_SIZE * 1.25)
@@ -291,7 +291,7 @@ class Webcam:
             (textsize_width, textsize_height), _ = self.get_text_size(text, font_size)
             self.render_text(frame, text, (int(self.width / 2 - textsize_width / 2), y_offset), size=font_size)
 
-    def display_calibrated_colors(self, frame):
+    def draw_calibrated_colors(self, frame):
         """Display all the colors that are calibrated while in calibrate mode."""
         for index, (color_name, color_bgr) in enumerate(self.calibrated_colors.items()):
             y = int(STICKER_AREA_TILE_SIZE * (index + 1))
@@ -373,13 +373,13 @@ class Webcam:
                         config.set_setting(CUBE_PALETTE, color_detector.cube_color_palette)
 
             if self.calibrate_mode:
-                self.display_current_color_to_calibrate(frame)
-                self.display_calibrated_colors(frame)
+                self.draw_current_color_to_calibrate(frame)
+                self.draw_calibrated_colors(frame)
             else:
                 self.draw_current_language(frame)
                 self.draw_preview_stickers(frame)
                 self.draw_snapshot_stickers(frame)
-                self.display_scanned_sides(frame)
+                self.draw_scanned_sides(frame)
 
             cv2.imshow("Qbr - Rubik's cube solver", frame)
 
