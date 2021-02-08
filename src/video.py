@@ -328,7 +328,6 @@ class Webcam:
         while True:
             _, frame = self.cam.read()
             key = cv2.waitKey(10) & 0xff
-            self.frame = frame
 
             # Quit on escape.
             if key == 27:
@@ -382,7 +381,7 @@ class Webcam:
                 self.draw_snapshot_stickers(frame)
                 self.display_scanned_sides(frame)
 
-            cv2.imshow('default', self.frame)
+            cv2.imshow("Qbr - Rubik's cube solver", frame)
 
         self.cam.release()
         cv2.destroyAllWindows()
