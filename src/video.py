@@ -298,15 +298,29 @@ class Webcam:
     def draw_calibrated_colors(self, frame):
         """Display all the colors that are calibrated while in calibrate mode."""
         for index, (color_name, color_bgr) in enumerate(self.calibrated_colors.items()):
-            y = int(STICKER_AREA_TILE_SIZE * (index + 1))
+            x1 = 90
+            y1 = int(STICKER_AREA_TILE_SIZE * (index + 1))
+            x2 = x1 + STICKER_AREA_TILE_SIZE
+            y2 = y1 + STICKER_AREA_TILE_SIZE
+
+            # shadow
             cv2.rectangle(
                 frame,
-                (90, y),
-                (90 + STICKER_AREA_TILE_SIZE, y + STICKER_AREA_TILE_SIZE),
+                (x1, y1),
+                (x2, y2),
+                (0, 0, 0),
+                -1
+            )
+
+            # foreground
+            cv2.rectangle(
+                frame,
+                (x1 + 1, y1 + 1),
+                (x2 - 1, y2 - 1),
                 tuple([int(c) for c in color_bgr]),
                 -1
             )
-            self.render_text(frame, i18n.t(color_name), (20, y + 3))
+            self.render_text(frame, i18n.t(color_name), (20, y1 + 3))
 
     def reset_calibrate_mode(self):
         """Reset calibrate mode variables."""
@@ -353,12 +367,10 @@ class Webcam:
                 self.reset_calibrate_mode()
                 self.calibrate_mode = not self.calibrate_mode
 
-            cv2.normalize(frame, frame, alpha=0, beta=(255 * 1.5), norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
             grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            denoisedFrame = cv2.fastNlMeansDenoising(grayFrame, None, 10, 4, 4)
-            blurredFrame = cv2.blur(denoisedFrame, (5, 5))
-            cannyFrame = cv2.Canny(blurredFrame, 30, 80, 3)
-            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
+            blurredFrame = cv2.blur(grayFrame, (3, 3))
+            cannyFrame = cv2.Canny(blurredFrame, 30, 60, 3)
+            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
             dilatedFrame = cv2.dilate(cannyFrame, kernel)
 
             contours = self.find_contours(dilatedFrame)
