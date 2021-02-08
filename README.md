@@ -2,6 +2,10 @@
 
 A rubik's cube solver written in python 3 using OpenCV via your webcam.
 
+- :rainbow: Accurate color detection
+- :mag: Accurate 3x3x3 rubik's cube detection
+- :capital_abcd: Multilingual
+
 ### Solve mode
 
 ![solve mode](./demo-solve-mode.jpg)
@@ -30,6 +34,7 @@ Simply follow the on-screen instructions and you're ready to go.
     + [The first 9-stickers in the upper left corner](#the-first-9-stickers-in-the-upper-left-corner)
     + [The second 9-sticker display below the one in the upper left corner](#the-second-9-sticker-display-below-the-one-in-the-upper-left-corner)
     + [Amount of sides scanned](#amount-of-sides-scanned)
+    + [Interface language](#interface-language)
     + [Calibrate mode](#calibrate-mode-1)
 - [Getting the solution](#getting-the-solution)
 - [Keybindings](#keybindings)
@@ -50,7 +55,7 @@ That inspired me to create my own. I started using images only and eventually sw
 # Installation
 
 ```
-$ git clone https://github.com/kkoomen/qbr.git
+$ git clone --depth 1 https://github.com/kkoomen/qbr.git
 $ cd qbr
 $ python3 -m venv env
 $ source ./env/bin/activate
@@ -58,6 +63,9 @@ $ pip3 install -r requirements.txt
 ```
 
 # Usage
+
+**Make sure you run `source ./env/bin/activate` every time you want to run the
+program.**
 
 Run Qbr:
 
@@ -84,6 +92,20 @@ as you'd like if it has been detected wrong.
 
 In the bottom left corner is shown the amount of sides scanned. This is so you
 know if you've scanned in all sides before pressing `ESC`.
+
+### Interface language
+
+In the top right corner you can see the current interface language. If you want
+to change the interface language you can press `l` to cycle through them.
+Continue to press `l` until you've found the right language.
+
+Default language is set to English.
+
+Available languages are:
+
+- English
+- Nederlands
+- 简体中文
 
 ### Calibrate mode
 
@@ -117,6 +139,8 @@ You should now see a solution (or an error if you did it wrong).
 
 - `c` toggle calibrate mode
 
+- `l` switch interface language
+
 # Paramaters
 
 You can use `-n` or `--normalize` to also output the solution in a "human-readable" format.
@@ -125,16 +149,6 @@ For example:
 
 * `R` will be: `Turn the right side a quarter turn away from you.`
 * `F2` will be: `Turn the front face 180 degrees.`
-
-You can also specify a language by passing in `-l` or `--language`. Default language
-is set to `en`.
-
-Available languages are:
-
-| language | key  |
-| ---      | ---  |
-| English  | `en` |
-| Dutch    | `nl` |
 
 # Example runs
 
@@ -156,7 +170,6 @@ top: white
 
 Moves: 20
 Solution: B2 U2 F' R U D' L' B' U L F U F2 R2 F2 D' F2 D R2 D2
-
 1. Turn the back side 180 degrees.
 2. Turn the top layer 180 degrees.
 3. Turn the front side a quarter turn to the left.

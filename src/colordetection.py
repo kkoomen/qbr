@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 # vim: fenc=utf-8 ts=4 sw=4 et
 
-
 import numpy as np
 import cv2
 from helpers import ciede2000, bgr2lab
-from config import config, CUBE_PALETTE
-
+from config import config
+from constants import CUBE_PALETTE
 
 class ColorDetection:
 
@@ -21,7 +20,7 @@ class ColorDetection:
             'yellow': (0, 255, 255)
         }
 
-        self.cube_color_palette = config.get_settings(
+        self.cube_color_palette = config.get_setting(
             CUBE_PALETTE,
             self.prominent_color_palette
         )

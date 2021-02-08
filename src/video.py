@@ -2,20 +2,23 @@
 # -*- coding: utf-8 -*-
 # vim: fenc=utf-8 ts=4 sw=4 et
 
-
 import cv2
 from colordetection import color_detector
-import numpy as np
-import math
-from config import config, CUBE_PALETTE
-
-STICKER_AREA_TILE_SIZE = 30
-STICKER_AREA_TILE_GAP = 4
-STICKER_AREA_OFFSET = 20
-STICKER_CONTOUR_COLOR = (36, 255, 12)
-CALIBRATE_MODE_KEY = 'c'
-TEXT_FONT = cv2.FONT_HERSHEY_TRIPLEX
-TEXT_SIZE = 0.5
+from config import config
+from helpers import get_next_locale
+import i18n
+from constants import (
+    LOCALES,
+    ROOT_DIR,
+    CUBE_PALETTE,
+    STICKER_AREA_TILE_SIZE,
+    STICKER_AREA_TILE_GAP,
+    STICKER_AREA_OFFSET,
+    STICKER_CONTOUR_COLOR,
+    CALIBRATE_MODE_KEY,
+    SWITCH_LANGUAGE_KEY,
+    TEXT_SIZE
+)
 
 class Webcam:
 
@@ -201,7 +204,7 @@ class Webcam:
     def draw_contours(self, frame, contours):
         """Draw contours onto the given frame."""
         if self.calibrate_mode:
-            # Only show the center piece's contour.
+            # Only show the center piece contour.
             (x, y, w, h) = contours[4]
             cv2.rectangle(frame, (x, y), (x + w, y + h), STICKER_CONTOUR_COLOR, 2)
         else:
@@ -244,32 +247,49 @@ class Webcam:
         self.sides[center_color_name] = self.snapshot_state
         self.draw_snapshot_stickers(frame)
 
-    def render_text(self, frame, text, pos, color=(255, 255, 255), size=TEXT_SIZE):
+    def get_freetype2_font(self):
+        """Get the freetype2 font, load it and return it."""
+        font_path = '{}/assets/arial-unicode-ms.ttf'.format(ROOT_DIR)
+        ft2 = cv2.freetype.createFreeType2()
+        ft2.loadFontData(font_path, 0)
+        return ft2
+
+    def render_text(self, frame, text, pos, color=(255, 255, 255), size=TEXT_SIZE, bottomLeftOrigin=False):
         """Render text with a shadow."""
-        cv2.putText(frame, text, pos, TEXT_FONT, size, (0, 0, 0), 2, cv2.LINE_AA)
-        cv2.putText(frame, text, pos, TEXT_FONT, size, color, 1, cv2.LINE_AA)
+        ft2 = self.get_freetype2_font()
+        self.get_text_size(text)
+        ft2.putText(frame, text, pos, fontHeight=size, color=(0, 0, 0), thickness=2, line_type=cv2.LINE_AA, bottomLeftOrigin=bottomLeftOrigin)
+        ft2.putText(frame, text, pos, fontHeight=size, color=color, thickness=-1, line_type=cv2.LINE_AA, bottomLeftOrigin=bottomLeftOrigin)
+
+    def get_text_size(self, text, size=TEXT_SIZE):
+        """Get text size based on the default freetype2 loaded font."""
+        ft2 = self.get_freetype2_font()
+        return ft2.getTextSize(text, size, thickness=-1)
 
     def display_scanned_sides(self, frame):
         """Display how many sides are scanned by the user."""
-        text = 'scanned sides: {}/6'.format(len(self.sides.keys()))
-        self.render_text(frame, text, (20, self.height - 20))
+        text = i18n.t('scannedSides', num=len(self.sides.keys()))
+        self.render_text(frame, text, (20, self.height - 20), bottomLeftOrigin=True)
 
     def display_current_color_to_calibrate(self, frame):
         """Display the current side's color that needs to be calibrated."""
+        y_offset = 20
+        font_size = int(TEXT_SIZE * 1.5)
         if self.done_calibrating:
             messages = [
-                'Calibrated successfully',
-                'Press {} to quit calibrate mode'.format(CALIBRATE_MODE_KEY)
+                i18n.t('calibratedSuccessfully'),
+                i18n.t('quitCalibrateMode', keyValue=CALIBRATE_MODE_KEY),
             ]
             for index, text in enumerate(messages):
-                textsize = cv2.getTextSize(text, TEXT_FONT, TEXT_SIZE, 1)[0]
-                y = 40 + 20 * index
-                self.render_text(frame, text, (int(self.width / 2 - textsize[0] / 2), y))
+                font_size
+                (textsize_width, textsize_height), _ = self.get_text_size(text, font_size)
+                y = y_offset + (textsize_height + 10) * index
+                self.render_text(frame, text, (int(self.width / 2 - textsize_width / 2), y), size=font_size)
         else:
             current_color = self.cube_sides[self.current_color_to_calibrate_index]
-            text = 'Calibrating {} side'.format(current_color)
-            textsize = cv2.getTextSize(text, TEXT_FONT, TEXT_SIZE, 1)[0]
-            self.render_text(frame, text, (int(self.width / 2 - textsize[0] / 2), 40))
+            text = i18n.t('currentCalibratingSide.{}'.format(current_color))
+            (textsize_width, textsize_height), _ = self.get_text_size(text, font_size)
+            self.render_text(frame, text, (int(self.width / 2 - textsize_width / 2), y_offset), size=font_size)
 
     def display_calibrated_colors(self, frame):
         """Display all the colors that are calibrated while in calibrate mode."""
@@ -282,13 +302,22 @@ class Webcam:
                 tuple([int(c) for c in color_bgr]),
                 -1
             )
-            self.render_text(frame, color_name, (20, y + 18))
+            self.render_text(frame, i18n.t(color_name), (20, y + 3))
 
     def reset_calibrate_mode(self):
         """Reset calibrate mode variables."""
         self.calibrated_colors = {}
         self.current_color_to_calibrate_index = 0
         self.done_calibrating = False
+
+    def draw_current_language(self, frame):
+        text = '{}: {}'.format(
+            i18n.t('language'),
+            LOCALES[config.get_setting('locale')]
+        )
+        (textsize_width, textsize_height), _ = self.get_text_size(text)
+        offset = 20
+        self.render_text(frame, text, (self.width - textsize_width - offset, offset))
 
     def run(self):
         """
@@ -299,14 +328,22 @@ class Webcam:
         while True:
             _, frame = self.cam.read()
             key = cv2.waitKey(10) & 0xff
+            self.frame = frame
 
             # Quit on escape.
             if key == 27:
                 break
 
-            # Update the snapshot when space bar is pressed.
-            if key == 32 and not self.calibrate_mode:
-                self.update_snapshot_state(frame)
+            if not self.calibrate_mode:
+                # Update the snapshot when space bar is pressed.
+                if key == 32:
+                    self.update_snapshot_state(frame)
+
+                # Switch to another language.
+                if key == ord(SWITCH_LANGUAGE_KEY):
+                    next_locale = get_next_locale(config.get_setting('locale'))
+                    config.set_setting('locale', next_locale)
+                    i18n.set('locale', next_locale)
 
             # Toggle calibrate mode.
             if key == ord(CALIBRATE_MODE_KEY):
@@ -340,11 +377,12 @@ class Webcam:
                 self.display_current_color_to_calibrate(frame)
                 self.display_calibrated_colors(frame)
             else:
+                self.draw_current_language(frame)
                 self.draw_preview_stickers(frame)
                 self.draw_snapshot_stickers(frame)
                 self.display_scanned_sides(frame)
 
-            cv2.imshow('default', frame)
+            cv2.imshow('default', self.frame)
 
         self.cam.release()
         cv2.destroyAllWindows()
@@ -354,7 +392,6 @@ class Webcam:
 
         if not self.scanned_successfully():
             return False
-
 
         # Convert all the sides and their BGR colors to cube notation.
         notation = dict(self.sides)

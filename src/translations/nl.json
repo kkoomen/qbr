@@ -1,0 +1,48 @@
+{
+    "nl": {
+        "scannedSides": "gescande zijden: %{num}/6",
+        "calibratedSuccessfully": "Kalibratie geslaagd",
+        "quitCalibrateMode": "Druk op %{keyValue} om terug te gaan",
+        "currentCalibratingSide": {
+            "red": "Kalibreer de rode zijde",
+            "orange": "Kalibreer de oranje zijde",
+            "white": "Kalibreer de witte zijde",
+            "yellow": "Kalibreer de gele zijde",
+            "blue": "Kalibreer de blauwe zijde",
+            "green": "Kalibreer de groene zijde"
+        },
+        "red": "rood",
+        "orange": "oranje",
+        "white": "wit",
+        "yellow": "geel",
+        "blue": "blauw",
+        "green": "groen",
+        "pleaseTryAgain": "Probeer het a.u.b. opnieuw.",
+        "error": "QBR FOUTMELDING",
+        "haventScannedAllSides": "Oeps, je hebt niet alle 6 de zijden correct gescand",
+        "moves": "Stappen: %{moves}",
+        "solution": "Oplossing: %{algorithm}",
+        "startingPosition": "Start positie：\nbovenzijde: groen\nvoorzijde: wit\n",
+        "language": "Taal",
+        "solveManual": {
+            "R" : "Draai de rechterzijde een kwartslag van je af.",
+            "R'": "Draai de rechterzijde een kwartslag naar je toe.",
+            "R2": "Draai de rechterzijde 180 graden.",
+            "L" : "Draai de linkerzijde een kwartslag naar je toe.",
+            "L'": "Draai de linkerzijde een kwartslag van je af.",
+            "L2": "Draai de linkerzijde 180 graden.",
+            "U" : "Draai de bovenste laag een kwartslag naar links.",
+            "U'": "Draai de bovenste laag een kwartslag naar rechts.",
+            "U2": "Draai de bovenste laag 180 graden.",
+            "D" : "Draai de onderste laag een kwartslag naar rechts.",
+            "D'": "Draai de onderste laag een kwartslag naar links.",
+            "D2": "Draai de onderste laag 180 graden.",
+            "B" : "Draai de achterzijde een kwartslag naar links.",
+            "B'": "Draai de achterzijde een kwartslag naar rechts.",
+            "B2": "Draai de achterzijde 180 graden.",
+            "F" : "Draai de voorzijde een kwartslag naar rechts.",
+            "F'": "Draai de voorzijde een kwartslag naar links.",
+            "F2": "Draai de voorzijde 180 graden."
+        }
+    }
+}

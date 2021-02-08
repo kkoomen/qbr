@@ -2,17 +2,20 @@
 # -*- coding: utf-8 -*-
 # vim: fenc=utf-8 ts=4 sw=4 et
 
-
-"""
-This file will be used for some global helper functions.
-"""
-
 import math
+from constants import LOCALES
+
+def get_next_locale(locale):
+    """Cycle through the locales and get the next locale."""
+    keys = list(LOCALES.keys())
+    index = keys.index(locale)
+    if index + 1 >= len(keys):
+        return keys[0]
+    return keys[index + 1]
 
 # Taken from https://stackoverflow.com/a/16020102
 def bgr2lab(inputColor):
     """Convert BGR to LAB."""
-
     # Convert BGR to RGB
     inputColor = (inputColor[2], inputColor[1], inputColor[0])
 
@@ -65,7 +68,6 @@ def bgr2lab(inputColor):
     Lab [ 2 ] = round( b, 4 )
 
     return Lab
-
 
 # Copyright to https://github.com/lovro-i/CIEDE2000.
 def ciede2000(Lab_1, Lab_2):
