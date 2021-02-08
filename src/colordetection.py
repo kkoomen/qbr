@@ -20,10 +20,13 @@ class ColorDetection:
             'yellow': (0, 255, 255)
         }
 
+        # Load colors from config and convert the list -> tuple.
         self.cube_color_palette = config.get_setting(
             CUBE_PALETTE,
             self.prominent_color_palette
         )
+        for side, bgr in self.cube_color_palette.items():
+            self.cube_color_palette[side] = tuple(bgr)
 
     def get_prominent_color(self, bgr):
         """Get the prominent color equivalent of the given bgr color."""
@@ -93,8 +96,7 @@ class ColorDetection:
         scanning his cube in solve mode by matching the scanned colors against
         this palette.
         """
-        self.cube_color_palette = palette
-        for side, bgr in self.cube_color_palette.items():
+        for side, bgr in palette.items():
             self.cube_color_palette[side] = tuple([int(c) for c in bgr])
 
 color_detector = ColorDetection()

@@ -274,7 +274,7 @@ class Webcam:
     def display_current_color_to_calibrate(self, frame):
         """Display the current side's color that needs to be calibrated."""
         y_offset = 20
-        font_size = int(TEXT_SIZE * 1.5)
+        font_size = int(TEXT_SIZE * 1.25)
         if self.done_calibrating:
             messages = [
                 i18n.t('calibratedSuccessfully'),
