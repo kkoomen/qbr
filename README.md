@@ -12,9 +12,9 @@ A webcam-based 3x3x3 rubik's cube solver written in Python 3 and OpenCV.
 
 ### Calibrate mode
 
-Isn't the default color detection not working for you? Use the **calibrate
+Isn't the default color detection working out for you? Use the **calibrate
 mode** to let Qbr be familiar with your cube's color scheme. If your room has
-proper light then this will give you a 99.9% guarantee that your colors will
+proper lighting then this will give you a 99.9% guarantee that your colors will
 be detected properly.
 
 Simply follow the on-screen instructions and you're ready to go.
