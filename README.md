@@ -31,10 +31,11 @@ Simply follow the on-screen instructions and you're ready to go.
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
-    + [The first 9-sticker display in the upper left corner](#the-first-9-sticker-display-in-the-upper-left-corner)
-    + [The second 9-sticker display in the upper left corner](#the-second-9-sticker-display-in-the-upper-left-corner)
-    + [Amount of sides scanned](#amount-of-sides-scanned)
-    + [Interface language](#interface-language)
+    + [The first 9-sticker display (upper left corner)](#the-first-9-sticker-display-upper-left-corner)
+    + [The second 9-sticker display (upper left corner)](#the-second-9-sticker-display-upper-left-corner)
+    + [Amount of sides scanned (bottom lef corner)](#amount-of-sides-scanned-bottom-lef-corner)
+    + [Interface language (top right corner)](#interface-language-top-right-corner)
+    + [Full 2D cube state visualization (bottom right corner)](#full-2d-cube-state-visualization-bottom-right-corner)
     + [Calibrate mode](#calibrate-mode-1)
 - [Getting the solution](#getting-the-solution)
 - [Keybindings](#keybindings)
@@ -76,23 +77,23 @@ $ ./src/qbr.py
 
 This opens a webcam interface with the following things:
 
-### The first 9-sticker display in the upper left corner
+### The first 9-sticker display (upper left corner)
 
 This is preview mode. These will update immediately and display how Qbr has
 detected the colors.
 
-### The second 9-sticker display in the upper left corner
+### The second 9-sticker display (upper left corner)
 
 This is a snapshot state. When pressing `SPACE` it will create a snapshot in
 order to show you what state it has saved. You can press `SPACE` as many times
 as you'd like if it has been detected wrong.
 
-### Amount of sides scanned
+### Amount of sides scanned (bottom lef corner)
 
 In the bottom left corner is shown the amount of sides scanned. This is so you
 know if you've scanned in all sides before pressing `ESC`.
 
-### Interface language
+### Interface language (top right corner)
 
 In the top right corner you can see the current interface language. If you want
 to change the interface language you can press `l` to cycle through them.
@@ -105,6 +106,11 @@ Available languages are:
 - English
 - Nederlands
 - 简体中文
+
+### Full 2D cube state visualization (bottom right corner)
+
+This visualization represents the whole cube state that is being saved and can
+be used to confirm whether the whole cube state has been scanned successfully.
 
 ### Calibrate mode
 
