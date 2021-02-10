@@ -20,13 +20,15 @@ from constants import (
     STICKER_CONTOUR_COLOR,
     CALIBRATE_MODE_KEY,
     SWITCH_LANGUAGE_KEY,
-    TEXT_SIZE
+    TEXT_SIZE,
+    E_INCORRECTLY_SCANNED,
+    E_ALREADY_SOLVED
 )
 
 class Webcam:
 
     def __init__(self):
-        self.cube_sides = ['green', 'red', 'blue', 'orange', 'white', 'yellow']
+        self.colors_to_calibrate = ['green', 'red', 'blue', 'orange', 'white', 'yellow']
         self.cam = cv2.VideoCapture(0)
         self.average_sticker_colors = {}
         self.result_state = {}
@@ -293,7 +295,7 @@ class Webcam:
                 y = y_offset + (textsize_height + 10) * index
                 self.render_text(frame, text, (int(self.width / 2 - textsize_width / 2), y), size=font_size)
         else:
-            current_color = self.cube_sides[self.current_color_to_calibrate_index]
+            current_color = self.colors_to_calibrate[self.current_color_to_calibrate_index]
             text = i18n.t('currentCalibratingSide.{}'.format(current_color))
             (textsize_width, textsize_height), _ = self.get_text_size(text, font_size)
             self.render_text(frame, text, (int(self.width / 2 - textsize_width / 2), y_offset), size=font_size)
@@ -427,6 +429,19 @@ class Webcam:
             combined += ''.join(notation[side])
         return combined
 
+    def state_already_solved(self):
+        """Find out if the cube hasn't been solved already."""
+        for side in ['white', 'red', 'green', 'yellow', 'orange', 'blue']:
+            # Get the center color of the current side.
+            center_bgr = self.result_state[side][4]
+
+            # Compare the center color to all neighbors. If we come across a
+            # different color, then we can assume the cube isn't solved yet.
+            for bgr in self.result_state[side]:
+                if center_bgr != bgr:
+                    return False
+        return True
+
     def run(self):
         """
         Open up the webcam and present the user with the Qbr user interface.
@@ -469,13 +484,13 @@ class Webcam:
                 if not self.calibrate_mode:
                     self.update_preview_state(frame, contours)
                 elif key == 32 and self.done_calibrating == False:
-                    current_color = self.cube_sides[self.current_color_to_calibrate_index]
+                    current_color = self.colors_to_calibrate[self.current_color_to_calibrate_index]
                     (x, y, w, h) = contours[4]
                     roi = frame[y+7:y+h-7, x+14:x+w-14]
                     avg_bgr = color_detector.get_dominant_color(roi)
                     self.calibrated_colors[current_color] = avg_bgr
                     self.current_color_to_calibrate_index += 1
-                    self.done_calibrating = self.current_color_to_calibrate_index == len(self.cube_sides)
+                    self.done_calibrating = self.current_color_to_calibrate_index == len(self.colors_to_calibrate)
                     if self.done_calibrating:
                         color_detector.set_cube_color_pallete(self.calibrated_colors)
                         config.set_setting(CUBE_PALETTE, color_detector.cube_color_palette)
@@ -496,10 +511,13 @@ class Webcam:
         cv2.destroyAllWindows()
 
         if len(self.result_state.keys()) != 6:
-            return False
+            return E_INCORRECTLY_SCANNED
 
         if not self.scanned_successfully():
-            return False
+            return E_INCORRECTLY_SCANNED
+
+        if self.state_already_solved():
+            return E_ALREADY_SOLVED
 
         return self.get_result_notation()
 

@@ -10,7 +10,9 @@ import i18n
 import os
 from config import config
 from constants import (
-    ROOT_DIR
+    ROOT_DIR,
+    E_INCORRECTLY_SCANNED,
+    E_ALREADY_SOLVED
 )
 
 # Set default locale.
@@ -33,27 +35,17 @@ class Qbr:
 
     def run(self):
         """The main function that will run the Qbr program."""
-        print('SCANNING GUIDE')
-        print('- Make sure to start by scanning by having the green-centered side facing the camera and having the white-centered side on top.')
-        print('- Start by scanning the green, red, blue and orange sides. The order in which these colors are scanned does not matter.')
-        print('')
-        print('Now, make sure to rotate the cube back to where the green-centered side is again facing the camera.')
-        print('')
-        print('- Turn the cube down and scan the white-centered side (green on bottom, white facing the camera)')
-        print('- Turn the cube 180 degrees back and scan the last yellow-centered side (green on top, yellow facing the camera)')
-        print('')
-
         state = webcam.run()
-        if not state:
-            self.print_error()
-            sys.exit(1)
+
+        # If we receive a number then it's an error code.
+        if isinstance(state, int) and state > 0:
+            self.print_E_and_exit(state)
 
         try:
             algorithm = kociemba.solve(state)
             length = len(algorithm.split(' '))
         except Exception:
-            self.print_error()
-            sys.exit(1)
+            self.print_E_and_exit(E_INCORRECTLY_SCANNED)
 
         print(i18n.t('startingPosition'))
         print(i18n.t('moves', moves=length))
@@ -64,9 +56,14 @@ class Qbr:
                 text = i18n.t('solveManual.{}'.format(notation))
                 print('{}. {}'.format(index + 1, text))
 
-    def print_error(self):
-        print('\033[0;33m[{}] {}'.format(i18n.t('error'), i18n.t('haventScannedAllSides')))
-        print('{}\033[0m'.format(i18n.t('pleaseTryAgain')))
+    def print_E_and_exit(self, code):
+        """Print an error message based on the code and exit the program."""
+        if code == E_INCORRECTLY_SCANNED:
+            print('\033[0;33m[{}] {}'.format(i18n.t('error'), i18n.t('haventScannedAllSides')))
+            print('{}\033[0m'.format(i18n.t('pleaseTryAgain')))
+        elif code == E_ALREADY_SOLVED:
+            print('\033[0;33m[{}] {}'.format(i18n.t('error'), i18n.t('cubeAlreadySolved')))
+        sys.exit(code)
 
 if __name__ == '__main__':
     # Define the application arguments.

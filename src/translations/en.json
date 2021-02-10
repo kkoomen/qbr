@@ -20,6 +20,7 @@
         "pleaseTryAgain": "Please try again.",
         "error": "QBR ERROR",
         "haventScannedAllSides": "Oops, you did not scan in all 6 sides correctly",
+        "cubeAlreadySolved": "Your cube has already been solved",
         "moves": "Moves: %{moves}",
         "solution": "Solution: %{algorithm}",
         "startingPosition": "Starting position：\nfront: green\ntop: white\n",

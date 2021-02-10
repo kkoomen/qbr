@@ -30,3 +30,7 @@ TEXT_SIZE = 18
 
 # Config
 CUBE_PALETTE = 'cube_palette'
+
+# Application errors
+E_INCORRECTLY_SCANNED = 1
+E_ALREADY_SOLVED = 2

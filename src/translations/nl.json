@@ -20,6 +20,7 @@
         "pleaseTryAgain": "Probeer het a.u.b. opnieuw.",
         "error": "QBR FOUTMELDING",
         "haventScannedAllSides": "Oeps, je hebt niet alle 6 de zijden correct gescand",
+        "cubeAlreadySolved": "Jouw kubus is al opgelost",
         "moves": "Stappen: %{moves}",
         "solution": "Oplossing: %{algorithm}",
         "startingPosition": "Start positie：\nbovenzijde: groen\nvoorzijde: wit\n",
