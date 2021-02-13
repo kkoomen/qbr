@@ -361,7 +361,7 @@ class Webcam:
                   | Y Y Y |
                     -----
         So we're gonna make a 4x3 grid and hardcode where each side has to go.
-        Based on the x and y in that 3x4 grid we can calculate its position.
+        Based on the x and y in that 4x3 grid we can calculate its position.
         """
         grid = {
             'white' : [1, 0],
@@ -380,8 +380,8 @@ class Webcam:
 
         # The X and Y offset is placed in the bottom-right corner, minus the
         # whole size of the 4x3 grid, minus an additional offset.
-        offset_x = self.width - ((side_size + side_offset) * 4) - MINI_STICKER_AREA_OFFSET
-        offset_y = self.height - ((side_size + side_offset) * 3) - MINI_STICKER_AREA_OFFSET
+        offset_x = self.width - (side_size * 4) - (side_offset * 3) - MINI_STICKER_AREA_OFFSET
+        offset_y = self.height - (side_size * 3) - (side_offset * 2) - MINI_STICKER_AREA_OFFSET
 
         for side, (grid_x, grid_y) in grid.items():
             index = -1
