@@ -6,7 +6,7 @@ import numpy as np
 import cv2
 from helpers import ciede2000, bgr2lab
 from config import config
-from constants import CUBE_PALETTE
+from constants import CUBE_PALETTE, COLOR_PLACEHOLDER
 
 class ColorDetection:
 
@@ -33,7 +33,7 @@ class ColorDetection:
         for color_name, color_bgr in self.cube_color_palette.items():
             if tuple([int(c) for c in bgr]) == color_bgr:
                 return self.prominent_color_palette[color_name]
-        return self.prominent_color_palette['white']
+        return COLOR_PLACEHOLDER
 
     def get_dominant_color(self, roi):
         """

@@ -7,6 +7,9 @@ import os
 # Global
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Colors
+COLOR_PLACEHOLDER = (150, 150, 150)
+
 # i18n
 LOCALES = {
     'en': 'English',

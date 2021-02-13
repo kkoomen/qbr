@@ -8,6 +8,7 @@ from config import config
 from helpers import get_next_locale
 import i18n
 from constants import (
+    COLOR_PLACEHOLDER,
     LOCALES,
     ROOT_DIR,
     CUBE_PALETTE,
@@ -394,7 +395,7 @@ class Webcam:
                     x2 = int(x1 + MINI_STICKER_AREA_TILE_SIZE)
                     y2 = int(y1 + MINI_STICKER_AREA_TILE_SIZE)
 
-                    foreground_color = (255, 255, 255)
+                    foreground_color = COLOR_PLACEHOLDER
                     if side in self.result_state:
                         foreground_color = color_detector.get_prominent_color(self.result_state[side][index])
 
