@@ -302,9 +302,10 @@ class Webcam:
 
     def draw_calibrated_colors(self, frame):
         """Display all the colors that are calibrated while in calibrate mode."""
+        offset_y = 20
         for index, (color_name, color_bgr) in enumerate(self.calibrated_colors.items()):
             x1 = 90
-            y1 = int(STICKER_AREA_TILE_SIZE * (index + 1))
+            y1 = int(offset_y + STICKER_AREA_TILE_SIZE * index)
             x2 = x1 + STICKER_AREA_TILE_SIZE
             y2 = y1 + STICKER_AREA_TILE_SIZE
 
