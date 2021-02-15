@@ -47,10 +47,9 @@ Simply follow the on-screen instructions and you're ready to go.
 # Introduction
 
 The idea to create this came personally to mind when I started solving rubik's
-cubes. My personal record is 7.90 seconds, but there were already so many
-professional programmers around the world who created robots that solve a
-rubik's cube in an ETA of 5 seconds and since 2016 in 1 second
-([link](https://www.youtube.com/watch?v=ixTddQQ2Hs4)).
+cubes. There were already so many professional programmers around the world who
+created robots that solve a rubik's cube in an ETA of 5 seconds and since 2016
+in 1 second ([link](https://www.youtube.com/watch?v=ixTddQQ2Hs4)).
 That inspired me to create my own. I started using images only and eventually
 switched to webcam.
 
@@ -79,7 +78,7 @@ This opens a webcam interface with the following things:
 
 ### The first 9-sticker display (upper left corner)
 
-This is preview mode. These will update immediately and display how Qbr has
+This is preview mode. This will update immediately and display how Qbr has
 detected the colors.
 
 ### The second 9-sticker display (upper left corner)
@@ -114,7 +113,7 @@ be used to confirm whether the whole cube state has been scanned successfully.
 
 ### Calibrate mode
 
-The default color scheme are the most prominent colors for white, yellow, red,
+The default color scheme contains the most prominent colors for white, yellow, red,
 orange, blue and green. If this can't detect your cube its colors properly then
 you can use calibrate mode.
 
