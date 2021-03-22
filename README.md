@@ -1,6 +1,7 @@
 # Qbr
 
-A webcam-based 3x3x3 rubik's cube solver written in Python 3 and OpenCV.
+Qbr, pronounced as Cuber, is a webcam-based 3x3x3 rubik's cube solver written in
+Python 3 and OpenCV.
 
 - :rainbow: Accurate color detection
 - :mag: Accurate 3x3x3 rubik's cube detection
