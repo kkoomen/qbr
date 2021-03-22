@@ -1,0 +1,49 @@
+{
+    "hu": {
+        "scannedSides": "Szkennelt oldalak: %{num}/6",
+        "calibratedSuccessfully": "Sikeres kalibráció",
+        "quitCalibrateMode": "Nyomd meg a(z) %{keyValue} gombot, hogy kilépj a kalibráció módból",
+        "currentCalibratingSide": {
+            "red": "Kalibráld a piros oldalt",
+            "orange": "Kalibráld a narancssárga oldalt",
+            "white": "Kalibráld a fehér oldalt",
+            "yellow": "Kalibráld a sárga oldalt",
+            "blue": "Kalibráld a kék oldalt",
+            "green": "Kalibráld a zöld oldalt"
+        },
+        "red": "piros",
+        "orange": "narancssárga",
+        "white": "fehér",
+        "yellow": "sárga",
+        "blue": "kék",
+        "green": "zöld",
+        "pleaseTryAgain": "Kérlek próbáld újra.",
+        "error": "QBR HIBA",
+        "haventScannedAllSides": "Hoppá, nem szkennelted be hibátlanul mind a 6 oldalt",
+        "cubeAlreadySolved": "A kockád már ki lett rakva",
+        "moves": "Lépések: %{moves}",
+        "solution": "Megoldás: %{algorithm}",
+        "startingPosition": "Kiinduló pozíció：\nelülső oldal: zöld\nfölső oldal: fehér\n",
+        "language": "Nyelv",
+        "solveManual": {
+            "R": "Forgasd el magadtól egy negyeddel a kocka jobb élét.",
+            "R'": "Forgasd magad felé egy negyeddel a kocka jobb élét.",
+            "R2": "Forgasd el 180 fokkal a kocka jobb élét.",
+            "L": "Forgasd magad felé egy negyeddel a kocka bal élét.",
+            "L'": "Forgasd el magadtól egy negyeddel a kocka bal élét.",
+            "L2": "Forgasd el 180 fokkal a kocka bal élét.",
+            "U": "Forgasd el egy negyeddel a kocka fölső élét balra.",
+            "U'": "Forgasd el egy negyeddel a kocka fölső élét jobbra.",
+            "U2": "Forgasd el 180 fokkal a kocka fölső élét.",
+            "D": "Forgasd el egy negyeddel a kocka alsó élét jobbra.",
+            "D'": "Forgasd el egy negyeddel a kocka alsó élét balra.",
+            "D2": "Forgasd el 180 fokkal a kocka alsó élét.",
+            "B": "Forgasd el egy negyeddel a kocka hátsó élét balra.",
+            "B'": "Forgasd el egy negyeddel a kocka hátsó élét jobbra.",
+            "B2": "Forgasd el 180 fokkal a kocka hátsó élét.",
+            "F": "Forgasd el egy negyeddel a kocka elülső élét jobbra.",
+            "F'": "Forgasd el egy negyeddel a kocka elülső élét balra.",
+            "F2": "Forgasd el 180 fokkal a kocka elülső élét."
+        }
+    }
+}
