@@ -1,0 +1,49 @@
+{
+    "de": {
+        "scannedSides": "Erfasste Seiten: %{num}/6",
+        "calibratedSuccessfully": "Erfolgreich kalibriert",
+        "quitCalibrateMode": "Drücke %{keyValue}, um den Kalibrierungsmodus zu verlassen",
+        "currentCalibratingSide": {
+            "red": "Kalibiere die rote Seite",
+            "orange": "Kalibiere die orange Seite",
+            "white": "Kalibiere die weiße Seite",
+            "yellow": "Kalibiere die gelbe Seite",
+            "blue": "Kalibiere die blaue Seite",
+            "green": "Kalibiere die grüne Seite"
+        },
+        "red": "rot",
+        "orange": "orange",
+        "white": "weiß",
+        "yellow": "gelb",
+        "blue": "blau",
+        "green": "grün",
+        "pleaseTryAgain": "Bitte erneut versuchen.",
+        "error": "QBR ERROR",
+        "haventScannedAllSides": "Ups, du hast nicht alle 6 Seiten korrekt eingescannt",
+        "cubeAlreadySolved": "Dein Würfel wurde bereits gelöst",
+        "moves": "Bewegungen: %{moves}",
+        "solution": "Lösung: %{algorithm}",
+        "startingPosition": "Startposition：\nvorne: grün\noben: weiß\n",
+        "language": "Sprache",
+        "solveManual": {
+            "R":  "Drehe die rechte Seite eine Vierteldrehung von dir weg.",
+            "R'": "Drehe die rechte Seite eine Vierteldrehung zu dir hin.",
+            "R2": "Drehe die rechte Seite um 180 Grad.",
+            "L":  "Drehe die linke Seite eine Vierteldrehung zu dir hin.",
+            "L'": "Drehe die linke Seite eine Vierteldrehung von dir weg.",
+            "L2": "Drehe die linke Seite um 180 Grad.",
+            "U":  "Drehe die obere Ebene eine Vierteldrehung nach links.",
+            "U'": "Drehe die obere Ebene eine Vierteldrehung nach rechts.",
+            "U2": "Drehe die obere Ebene um 180 Grad.",
+            "D":  "Drehe die untere Ebene eine Vierteldrehung nach rechts.",
+            "D'": "Drehe die untere Ebene eine Vierteldrehung nach links.",
+            "D2": "Drehe die untere Ebene um 180 Grad.",
+            "B":  "Drehe die Rückseite eine Vierteldrehung nach links.",
+            "B'": "Drehe die Rückseite eine Vierteldrehung nach rechts.",
+            "B2": "Drehe die Rückseite um 180 Grad.",
+            "F":  "Drehe die Vorderseite eine Vierteldrehung nach rechts.",
+            "F'": "Drehe die Vorderseite eine Vierteldrehung nach links.",
+            "F2": "Drehe die Vorderseite um 180 Grad."
+        }
+    }
+}
