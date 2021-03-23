@@ -105,6 +105,7 @@ Available languages are:
 
 - English
 - Hungarian
+- Deutsch
 - Nederlands
 - 简体中文
 
