@@ -104,6 +104,7 @@ Default language is set to English.
 Available languages are:
 
 - English
+- Hungarian
 - Nederlands
 - 简体中文
 
