@@ -34,7 +34,7 @@ Simply follow the on-screen instructions and you're ready to go.
 - [Usage](#usage)
     + [The first 9-sticker display (upper left corner)](#the-first-9-sticker-display-upper-left-corner)
     + [The second 9-sticker display (upper left corner)](#the-second-9-sticker-display-upper-left-corner)
-    + [Amount of sides scanned (bottom lef corner)](#amount-of-sides-scanned-bottom-lef-corner)
+    + [Amount of sides scanned (bottom left corner)](#amount-of-sides-scanned-bottom-left-corner)
     + [Interface language (top right corner)](#interface-language-top-right-corner)
     + [Full 2D cube state visualization (bottom right corner)](#full-2d-cube-state-visualization-bottom-right-corner)
     + [Calibrate mode](#calibrate-mode-1)
@@ -84,13 +84,13 @@ detected the colors.
 
 ### The second 9-sticker display (upper left corner)
 
-This is a snapshot state. When pressing `SPACE` it will create a snapshot in
+This is the snapshot state. When pressing `SPACE` it will create a snapshot in
 order to show you what state it has saved. You can press `SPACE` as many times
 as you'd like if it has been detected wrong.
 
-### Amount of sides scanned (bottom lef corner)
+### Amount of sides scanned (bottom left corner)
 
-In the bottom left corner is shown the amount of sides scanned. This is so you
+The bottom left corner shows the amount of sides scanned. This is so you
 know if you've scanned in all sides before pressing `ESC`.
 
 ### Interface language (top right corner)
