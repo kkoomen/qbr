@@ -106,7 +106,8 @@ Available languages are:
 - English
 - Hungarian
 - Deutsch
-- Nederlands
+- French
+- Dutch
 - 简体中文
 
 ### Full 2D cube state visualization (bottom right corner)
