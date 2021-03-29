@@ -1,0 +1,49 @@
+{
+    "fr": {
+        "scannedSides": "Façades scannées: %{num}/6",
+        "calibratedSuccessfully": "Calibration réussi",
+        "quitCalibrateMode": "Appuyez %{keyValue} pour quitter le mode de calibration",
+        "currentCalibratingSide": {
+            "red": "Calibrer la face rouge",
+            "orange": "Calibrer la face orange",
+            "white": "Calibrer la face blanche",
+            "yellow": "Calibrer la face jaune",
+            "blue": "Calibrer la face bleu",
+            "green": "Calibrer la face verte"
+        },
+        "red": "rouge",
+        "orange": "orange",
+        "white": "blanc",
+        "yellow": "jaune",
+        "blue": "bleu",
+        "green": "vert",
+        "pleaseTryAgain": "Veuillez réessayer encore.",
+        "error": "ERREUR",
+        "haventScannedAllSides": "Oops, vous n'avez pas scanné les 6 faces correctement",
+        "cubeAlreadySolved": "Votre cube a été résolu",
+        "moves": "Mouvements: %{moves}",
+        "solution": "Solution: %{algorithm}",
+        "startingPosition": "Position de départ：\nfaçade: vert\nhaut: blanc\n",
+        "language": "Langue",
+        "solveManual": {
+            "R": "Tourner la face droite un quart de tour loin de vous.",
+            "R'": "Tourner la face droite un quart de tour vers vous.",
+            "R2": "Tourner la face droite 180 degrés.",
+            "L": "Tourner la face gauche un quart de tour vers vous.",
+            "L'": "Tourner la face gauche un quart de tour loin de vous.",
+            "L2": "Tourner la face gauche 180 degrés.",
+            "U": "Tourner la face du haut un quart de tour vers la gauche.",
+            "U'": "Tourner la face du haut un quart de tour vers la droite.",
+            "U2": "Tourner la face du haut 180 degrés.",
+            "D": "Tourner la face du bas un quart de tour vers la droite.",
+            "D'": "Tourner la face du bas un quart de tour vers la gauche.",
+            "D2": "Tourner la face du bas 180 degrés.",
+            "B": "Tourner la face arrière un quart de tour vers la gauche.",
+            "B'": "Tourner la face arrière un quart de tour vers la droite.",
+            "B2": "Tourner la face arrière 180 degrés.",
+            "F": "Tourner la face avant un quart de tour vers la droite.",
+            "F'": "Tourner la face avant un quart de tour vers la gauche.",
+            "F2": "Tourner la face avant 180 degrés."
+        }
+    }
+}
