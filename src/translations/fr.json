@@ -1,5 +1,5 @@
 {
-    "en": {
+    "fr": {
         "scannedSides": "Façades scannées: %{num}/6",
         "calibratedSuccessfully": "Calibration réussi",
         "quitCalibrateMode": "Appuyez %{keyValue} pour quitter le mode de calibration",
