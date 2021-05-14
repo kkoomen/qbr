@@ -39,6 +39,7 @@ Simply follow the on-screen instructions and you're ready to go.
     + [Full 2D cube state visualization (bottom right corner)](#full-2d-cube-state-visualization-bottom-right-corner)
     + [Calibrate mode](#calibrate-mode-1)
 - [Getting the solution](#getting-the-solution)
+  * [How to scan your cube properly?](#how-to-scan-your-cube-properly)
 - [Keybindings](#keybindings)
 - [Paramaters](#paramaters)
 - [Example runs](#example-runs)
@@ -138,6 +139,30 @@ Qbr checks if you have filled in all 6 sides when pressing `ESC`. If so, it'll
 calculate a solution if you've scanned it correctly.
 
 You should now see a solution (or an error if you did it wrong).
+
+## How to scan your cube properly?
+
+There is a strict way of scanning in the cube. Qbr will detect the side
+automatically, but the way you rotate the cube during the time you're scanning
+it is crucial in order for Qbr to properly calculate a solution. Make sure to
+follow the steps below properly:
+
+- Start off with the `green` side facing the camera and `white` on top, `green`
+  being away from you. Start by scanning in the green side at this point.
+- After you've scanned in the green side, rotate the cube 90 or -90 degrees
+  horizontally. It doesn't matter if you go clockwise or counter-clockwise.
+  Continue to do this for the `green`, `blue`, `red` and `orange` sides until
+  you are back at the green side.
+- You should now be in the same position like you started, having `green` facing
+  the camera and `white` on top. Rotate the cube forward 90 degrees, resulting
+  in `green` at the bottom and `white` facing the camera. Start scanning in the
+  `white` side.
+- After you've scanned the `white` side, turn the cube back to how you started,
+  having `green` in front again and `white` on top. Now rotate the cube
+  backwards 90 degrees, resulting in `green` on top and `yellow` facing the
+  camera. Now you can scan in the last side `yellow`.
+
+If you've done the steps above correctly, you should have a solution from Qbr.
 
 # Keybindings
 
