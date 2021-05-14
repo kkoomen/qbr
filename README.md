@@ -148,11 +148,11 @@ it is crucial in order for Qbr to properly calculate a solution. Make sure to
 follow the steps below properly:
 
 - Start off with the `green` side facing the camera and `white` on top, `green`
-  being away from you. Start by scanning in the green side at this point.
-- After you've scanned in the green side, rotate the cube 90 or -90 degrees
+  being away from you. Start by scanning in the `green` side at this point.
+- After you've scanned in the `green` side, rotate the cube 90 or -90 degrees
   horizontally. It doesn't matter if you go clockwise or counter-clockwise.
   Continue to do this for the `green`, `blue`, `red` and `orange` sides until
-  you are back at the green side.
+  you are back at the `green` side.
 - You should now be in the same position like you started, having `green` facing
   the camera and `white` on top. Rotate the cube forward 90 degrees, resulting
   in `green` at the bottom and `white` facing the camera. Start scanning in the
@@ -160,7 +160,7 @@ follow the steps below properly:
 - After you've scanned the `white` side, turn the cube back to how you started,
   having `green` in front again and `white` on top. Now rotate the cube
   backwards 90 degrees, resulting in `green` on top and `yellow` facing the
-  camera. Now you can scan in the last side `yellow`.
+  camera. Now you can scan in the last `yellow` side.
 
 If you've done the steps above correctly, you should have a solution from Qbr.
 
