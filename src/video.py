@@ -29,8 +29,11 @@ from constants import (
 class Webcam:
 
     def __init__(self):
-        self.colors_to_calibrate = ['green', 'red', 'blue', 'orange', 'white', 'yellow']
+        print('Starting webcam... (this might take a while, please be patient)')
         self.cam = cv2.VideoCapture(0)
+        print('Webcam successfully started')
+
+        self.colors_to_calibrate = ['green', 'red', 'blue', 'orange', 'white', 'yellow']
         self.average_sticker_colors = {}
         self.result_state = {}
 
