@@ -42,7 +42,6 @@ class ColorDetection:
         :param roi: The image list.
         :returns: tuple
         """
-        average = roi.mean(axis=0).mean(axis=0)
         pixels = np.float32(roi.reshape(-1, 3))
 
         n_colors = 1

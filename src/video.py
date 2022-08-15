@@ -207,7 +207,7 @@ class Webcam:
         for side, preview in self.result_state.items():
             for bgr in preview:
                 key = str(bgr)
-                if not key in color_count:
+                if key not in color_count:
                     color_count[key] = 1
                 else:
                     color_count[key] = color_count[key] + 1
