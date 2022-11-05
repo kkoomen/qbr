@@ -7,6 +7,8 @@ from colordetection import color_detector
 from config import config
 from helpers import get_next_locale
 import i18n
+from PIL import ImageFont, ImageDraw, Image
+import numpy as np
 from constants import (
     COLOR_PLACEHOLDER,
     LOCALES,
@@ -54,7 +56,7 @@ class Webcam:
         self.current_color_to_calibrate_index = 0
         self.done_calibrating = False
 
-    def draw_stickers(self, frame, stickers, offset_x, offset_y):
+    def draw_stickers(self, stickers, offset_x, offset_y):
         """Draws the given stickers onto the given frame."""
         index = -1
         for row in range(3):
@@ -67,7 +69,7 @@ class Webcam:
 
                 # shadow
                 cv2.rectangle(
-                    frame,
+                    self.frame,
                     (x1, y1),
                     (x2, y2),
                     (0, 0, 0),
@@ -76,21 +78,21 @@ class Webcam:
 
                 # foreground color
                 cv2.rectangle(
-                    frame,
+                    self.frame,
                     (x1 + 1, y1 + 1),
                     (x2 - 1, y2 - 1),
                     color_detector.get_prominent_color(stickers[index]),
                     -1
                 )
 
-    def draw_preview_stickers(self, frame):
+    def draw_preview_stickers(self):
         """Draw the current preview state onto the given frame."""
-        self.draw_stickers(frame, self.preview_state, STICKER_AREA_OFFSET, STICKER_AREA_OFFSET)
+        self.draw_stickers(self.preview_state, STICKER_AREA_OFFSET, STICKER_AREA_OFFSET)
 
-    def draw_snapshot_stickers(self, frame):
+    def draw_snapshot_stickers(self):
         """Draw the current snapshot state onto the given frame."""
         y = STICKER_AREA_TILE_SIZE * 3 + STICKER_AREA_TILE_GAP * 2 + STICKER_AREA_OFFSET * 2
-        self.draw_stickers(frame, self.snapshot_state, STICKER_AREA_OFFSET, y)
+        self.draw_stickers(self.snapshot_state, STICKER_AREA_OFFSET, y)
 
     def find_contours(self, dilatedFrame):
         """Find the contours of a 3x3x3 cube."""
@@ -214,17 +216,17 @@ class Webcam:
         invalid_colors = [k for k, v in color_count.items() if v != 9]
         return len(invalid_colors) == 0
 
-    def draw_contours(self, frame, contours):
+    def draw_contours(self, contours):
         """Draw contours onto the given frame."""
         if self.calibrate_mode:
             # Only show the center piece contour.
             (x, y, w, h) = contours[4]
-            cv2.rectangle(frame, (x, y), (x + w, y + h), STICKER_CONTOUR_COLOR, 2)
+            cv2.rectangle(self.frame, (x, y), (x + w, y + h), STICKER_CONTOUR_COLOR, 2)
         else:
             for index, (x, y, w, h) in enumerate(contours):
-                cv2.rectangle(frame, (x, y), (x + w, y + h), STICKER_CONTOUR_COLOR, 2)
+                cv2.rectangle(self.frame, (x, y), (x + w, y + h), STICKER_CONTOUR_COLOR, 2)
 
-    def update_preview_state(self, frame, contours):
+    def update_preview_state(self, contours):
         """
         Get the average color value for the contour for every X amount of frames
         to prevent flickering and more precise results.
@@ -244,7 +246,7 @@ class Webcam:
                 self.preview_state[index] = eval(most_common_color)
                 break
 
-            roi = frame[y+7:y+h-7, x+14:x+w-14]
+            roi = self.frame[y+7:y+h-7, x+14:x+w-14]
             avg_bgr = color_detector.get_dominant_color(roi)
             closest_color = color_detector.get_closest_color(avg_bgr)['color_bgr']
             self.preview_state[index] = closest_color
@@ -253,40 +255,47 @@ class Webcam:
             else:
                 self.average_sticker_colors[index] = [closest_color]
 
-    def update_snapshot_state(self, frame):
+    def update_snapshot_state(self):
         """Update the snapshot state based on the current preview state."""
         self.snapshot_state = list(self.preview_state)
         center_color_name = color_detector.get_closest_color(self.snapshot_state[4])['color_name']
         self.result_state[center_color_name] = self.snapshot_state
-        self.draw_snapshot_stickers(frame)
+        self.draw_snapshot_stickers()
 
-    def get_freetype2_font(self):
-        """Get the freetype2 font, load it and return it."""
+    def get_font(self, size=TEXT_SIZE):
+        """Load the truetype font with the specified text size."""
         font_path = '{}/assets/arial-unicode-ms.ttf'.format(ROOT_DIR)
-        ft2 = cv2.freetype.createFreeType2()
-        ft2.loadFontData(font_path, 0)
-        return ft2
+        return ImageFont.truetype(font_path, size)
 
-    def render_text(self, frame, text, pos, color=(255, 255, 255), size=TEXT_SIZE, bottomLeftOrigin=False):
-        """Render text with a shadow."""
-        ft2 = self.get_freetype2_font()
-        self.get_text_size(text)
-        ft2.putText(frame, text, pos, fontHeight=size, color=(0, 0, 0), thickness=2, line_type=cv2.LINE_AA, bottomLeftOrigin=bottomLeftOrigin)
-        ft2.putText(frame, text, pos, fontHeight=size, color=color, thickness=-1, line_type=cv2.LINE_AA, bottomLeftOrigin=bottomLeftOrigin)
+    def render_text(self, text, pos, color=(255, 255, 255), size=TEXT_SIZE, anchor='lt'):
+        """
+        Render text with a shadow using the pillow module.
+        """
+        font = self.get_font(size)
+
+        # Convert opencv frame (np.array) to PIL Image array.
+        frame = Image.fromarray(self.frame)
+
+        # Draw the text onto the image.
+        draw = ImageDraw.Draw(frame)
+        draw.text(pos, text, font=font, fill=color, anchor=anchor,
+                  stroke_width=1, stroke_fill=(0, 0, 0))
+
+        # Convert the pillow frame back to a numpy array.
+        self.frame = np.array(frame)
 
     def get_text_size(self, text, size=TEXT_SIZE):
         """Get text size based on the default freetype2 loaded font."""
-        ft2 = self.get_freetype2_font()
-        return ft2.getTextSize(text, size, thickness=-1)
+        return self.get_font(size).getsize(text)
 
-    def draw_scanned_sides(self, frame):
+    def draw_scanned_sides(self):
         """Display how many sides are scanned by the user."""
         text = i18n.t('scannedSides', num=len(self.result_state.keys()))
-        self.render_text(frame, text, (20, self.height - 20), bottomLeftOrigin=True)
+        self.render_text(text, (20, self.height - 20), anchor='lb')
 
-    def draw_current_color_to_calibrate(self, frame):
+    def draw_current_color_to_calibrate(self):
         """Display the current side's color that needs to be calibrated."""
-        y_offset = 20
+        offset_y = 20
         font_size = int(TEXT_SIZE * 1.25)
         if self.done_calibrating:
             messages = [
@@ -294,17 +303,15 @@ class Webcam:
                 i18n.t('quitCalibrateMode', keyValue=CALIBRATE_MODE_KEY),
             ]
             for index, text in enumerate(messages):
-                font_size
-                (textsize_width, textsize_height), _ = self.get_text_size(text, font_size)
-                y = y_offset + (textsize_height + 10) * index
-                self.render_text(frame, text, (int(self.width / 2 - textsize_width / 2), y), size=font_size)
+                _, textsize_height = self.get_text_size(text, font_size)
+                y = offset_y + (textsize_height + 10) * index
+                self.render_text(text, (int(self.width / 2), y), size=font_size, anchor='mt')
         else:
             current_color = self.colors_to_calibrate[self.current_color_to_calibrate_index]
             text = i18n.t('currentCalibratingSide.{}'.format(current_color))
-            (textsize_width, textsize_height), _ = self.get_text_size(text, font_size)
-            self.render_text(frame, text, (int(self.width / 2 - textsize_width / 2), y_offset), size=font_size)
+            self.render_text(text, (int(self.width / 2), offset_y), size=font_size, anchor='mt')
 
-    def draw_calibrated_colors(self, frame):
+    def draw_calibrated_colors(self):
         """Display all the colors that are calibrated while in calibrate mode."""
         offset_y = 20
         for index, (color_name, color_bgr) in enumerate(self.calibrated_colors.items()):
@@ -315,7 +322,7 @@ class Webcam:
 
             # shadow
             cv2.rectangle(
-                frame,
+                self.frame,
                 (x1, y1),
                 (x2, y2),
                 (0, 0, 0),
@@ -324,13 +331,13 @@ class Webcam:
 
             # foreground
             cv2.rectangle(
-                frame,
+                self.frame,
                 (x1 + 1, y1 + 1),
                 (x2 - 1, y2 - 1),
                 tuple([int(c) for c in color_bgr]),
                 -1
             )
-            self.render_text(frame, i18n.t(color_name), (20, y1 + 3))
+            self.render_text(i18n.t(color_name), (20, y1 + STICKER_AREA_TILE_SIZE / 2 - 3), anchor='lm')
 
     def reset_calibrate_mode(self):
         """Reset calibrate mode variables."""
@@ -338,16 +345,15 @@ class Webcam:
         self.current_color_to_calibrate_index = 0
         self.done_calibrating = False
 
-    def draw_current_language(self, frame):
+    def draw_current_language(self):
         text = '{}: {}'.format(
             i18n.t('language'),
             LOCALES[config.get_setting('locale')]
         )
-        (textsize_width, textsize_height), _ = self.get_text_size(text)
         offset = 20
-        self.render_text(frame, text, (self.width - textsize_width - offset, offset))
+        self.render_text(text, (self.width - offset, offset), anchor='rt')
 
-    def draw_2d_cube_state(self, frame):
+    def draw_2d_cube_state(self):
         """
         Create a 2D cube state visualization and draw the self.result_state.
 
@@ -393,8 +399,16 @@ class Webcam:
             for row in range(3):
                 for col in range(3):
                     index += 1
-                    x1 = int((offset_x + MINI_STICKER_AREA_TILE_SIZE * col) + (MINI_STICKER_AREA_TILE_GAP * col) + ((side_size + side_offset) * grid_x))
-                    y1 = int((offset_y + MINI_STICKER_AREA_TILE_SIZE * row) + (MINI_STICKER_AREA_TILE_GAP * row) + ((side_size + side_offset) * grid_y))
+                    x1 = int(
+                        (offset_x + MINI_STICKER_AREA_TILE_SIZE * col) +
+                        (MINI_STICKER_AREA_TILE_GAP * col) +
+                        ((side_size + side_offset) * grid_x)
+                    )
+                    y1 = int(
+                        (offset_y + MINI_STICKER_AREA_TILE_SIZE * row) +
+                        (MINI_STICKER_AREA_TILE_GAP * row) +
+                        ((side_size + side_offset) * grid_y)
+                    )
                     x2 = int(x1 + MINI_STICKER_AREA_TILE_SIZE)
                     y2 = int(y1 + MINI_STICKER_AREA_TILE_SIZE)
 
@@ -404,7 +418,7 @@ class Webcam:
 
                     # shadow
                     cv2.rectangle(
-                        frame,
+                        self.frame,
                         (x1, y1),
                         (x2, y2),
                         (0, 0, 0),
@@ -413,7 +427,7 @@ class Webcam:
 
                     # foreground color
                     cv2.rectangle(
-                        frame,
+                        self.frame,
                         (x1 + 1, y1 + 1),
                         (x2 - 1, y2 - 1),
                         foreground_color,
@@ -455,6 +469,7 @@ class Webcam:
         """
         while True:
             _, frame = self.cam.read()
+            self.frame = frame
             key = cv2.waitKey(10) & 0xff
 
             # Quit on escape.
@@ -464,7 +479,7 @@ class Webcam:
             if not self.calibrate_mode:
                 # Update the snapshot when space bar is pressed.
                 if key == 32:
-                    self.update_snapshot_state(frame)
+                    self.update_snapshot_state()
 
                 # Switch to another language.
                 if key == ord(SWITCH_LANGUAGE_KEY):
@@ -477,7 +492,7 @@ class Webcam:
                 self.reset_calibrate_mode()
                 self.calibrate_mode = not self.calibrate_mode
 
-            grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            grayFrame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
             blurredFrame = cv2.blur(grayFrame, (3, 3))
             cannyFrame = cv2.Canny(blurredFrame, 30, 60, 3)
             kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
@@ -485,13 +500,13 @@ class Webcam:
 
             contours = self.find_contours(dilatedFrame)
             if len(contours) == 9:
-                self.draw_contours(frame, contours)
+                self.draw_contours(contours)
                 if not self.calibrate_mode:
-                    self.update_preview_state(frame, contours)
-                elif key == 32 and self.done_calibrating == False:
+                    self.update_preview_state(contours)
+                elif key == 32 and self.done_calibrating is False:
                     current_color = self.colors_to_calibrate[self.current_color_to_calibrate_index]
                     (x, y, w, h) = contours[4]
-                    roi = frame[y+7:y+h-7, x+14:x+w-14]
+                    roi = self.frame[y+7:y+h-7, x+14:x+w-14]
                     avg_bgr = color_detector.get_dominant_color(roi)
                     self.calibrated_colors[current_color] = avg_bgr
                     self.current_color_to_calibrate_index += 1
@@ -501,16 +516,16 @@ class Webcam:
                         config.set_setting(CUBE_PALETTE, color_detector.cube_color_palette)
 
             if self.calibrate_mode:
-                self.draw_current_color_to_calibrate(frame)
-                self.draw_calibrated_colors(frame)
+                self.draw_current_color_to_calibrate()
+                self.draw_calibrated_colors()
             else:
-                self.draw_current_language(frame)
-                self.draw_preview_stickers(frame)
-                self.draw_snapshot_stickers(frame)
-                self.draw_scanned_sides(frame)
-                self.draw_2d_cube_state(frame)
+                self.draw_current_language()
+                self.draw_preview_stickers()
+                self.draw_snapshot_stickers()
+                self.draw_scanned_sides()
+                self.draw_2d_cube_state()
 
-            cv2.imshow("Qbr - Rubik's cube solver", frame)
+            cv2.imshow("Qbr - Rubik's cube solver", self.frame)
 
         self.cam.release()
         cv2.destroyAllWindows()

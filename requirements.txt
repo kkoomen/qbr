@@ -1,10 +1,6 @@
-cffi==1.14.4
-future==0.18.2
 kociemba==1.2.1
 numpy==1.22.0
-opencv-python==4.5.1.48
-opencv-contrib-python==4.5.1.48
-pycparser==2.20
+opencv-python==4.6.0.66
+pillow==9.2.0
 pydocstyle==5.1.1
 python-i18n==0.3.9
-snowballstemmer==2.1.0
