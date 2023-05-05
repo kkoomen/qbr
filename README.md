@@ -108,6 +108,7 @@ Available languages are:
 - Hungarian
 - Deutsch
 - French
+- Spanish
 - Dutch
 - 简体中文
 
