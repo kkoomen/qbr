@@ -1,0 +1,49 @@
+{
+    "es": {
+        "scannedSides": "caras escaneadas: %{num}/6",
+        "calibratedSuccessfully": "Calibradas satisfactoriamente",
+        "quitCalibrateMode": "Pulsa %{keyValue} para salir del modo de calibración",
+        "currentCalibratingSide": {
+            "red": "Calibra la cara roja",
+            "orange": "Calibra la cara naranja",
+            "white": "Calibra la cara blanca",
+            "yellow": "Calibra la cara amarilla",
+            "blue": "Calibra la cara azul",
+            "green": "Calibra la cara verde"
+        },
+        "red": "rojo",
+        "orange": "naranja",
+        "white": "blanco",
+        "yellow": "amarillo",
+        "blue": "azul",
+        "green": "verde",
+        "pleaseTryAgain": "Por favor, íntentalo de nuevo.",
+        "error": "QBR ERROR",
+        "haventScannedAllSides": "Ups, ¿escaneaste los 6 lados correctamente?",
+        "cubeAlreadySolved": "Tu cubo ha sido resuelto",
+        "moves": "Movimientos: %{moves}",
+        "solution": "Solución: %{algorithm}",
+        "startingPosition": "Posición de inicio：\nfrontal: verde\nsuperior: blanco\n",
+        "language": "Lenguaje",
+        "solveManual": {
+            "R": "Gira la cara derecha un cuarto de vuelta en sentido horario.",
+            "R'": "Gira la cara derecha un cuarto de vuelta en sentido antihorario.",
+            "R2": "Gira la cara derecha 180 grados.",
+            "L": "Gira la cara izquierda un cuarto de vuelta hacia a ti (sentido horario).",
+            "L'": "Gira la cara izquierda un cuarto de vuelta desde ti (sentido antihorario).",
+            "L2": "Gira la cara izquierda 180 grados.",
+            "U": "Gira la cara superior un cuarto de vuelta hacia la izquierda.",
+            "U'": "Gira la cara superior un cuarto de vuelta hacia la derecha.",
+            "U2": "Gira la cara superior 180 grados.",
+            "D": "Gira la cara inferior un cuarto de vuelta hacia la derecha.",
+            "D'": "Gira la cara inferior un cuarto de vuelta hacia la izquierda.",
+            "D2": "Gira la cara inferior 180 grados.",
+            "B": "Gira la cara trasera un cuarto de vuelta hacia la izquierda.",
+            "B'": "Gira la cara trasera un cuarto de vuelta hacia la derecha.",
+            "B2": "Gira la cara trasera 180 grados.",
+            "F": "Gira la cara frontal un cuarto de vuelta hacia la derecha.",
+            "F'": "Gira la cara frontal un cuarto de vuelta hacia la izquierda.",
+            "F2": "Gira la cara frontal 180 grados."
+        }
+    }
+}
