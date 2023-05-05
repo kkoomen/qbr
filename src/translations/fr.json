@@ -23,7 +23,7 @@
         "cubeAlreadySolved": "Votre cube a été résolu",
         "moves": "Mouvements: %{moves}",
         "solution": "Solution: %{algorithm}",
-        "startingPosition": "Position de départ：\nfaçade: vert\nhaut: blanc\n",
+        "startingPosition": "Position de départ: \nfaçade: vert\nhaut: blanc\n",
         "language": "Langue",
         "solveManual": {
             "R": "Tourner la face droite un quart de tour loin de vous.",

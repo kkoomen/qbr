@@ -23,7 +23,7 @@
         "cubeAlreadySolved": "Your cube has already been solved",
         "moves": "Moves: %{moves}",
         "solution": "Solution: %{algorithm}",
-        "startingPosition": "Starting position：\nfront: green\ntop: white\n",
+        "startingPosition": "Starting position: \nfront: green\ntop: white\n",
         "language": "Language",
         "solveManual": {
             "R": "Turn the right side a quarter turn away from you.",

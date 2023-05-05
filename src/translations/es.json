@@ -23,7 +23,7 @@
         "cubeAlreadySolved": "Tu cubo ha sido resuelto",
         "moves": "Movimientos: %{moves}",
         "solution": "Solución: %{algorithm}",
-        "startingPosition": "Posición de inicio：\nfrontal: verde\nsuperior: blanco\n",
+        "startingPosition": "Posición de inicio: \nfrontal: verde\nsuperior: blanco\n",
         "language": "Lenguaje",
         "solveManual": {
             "R": "Gira la cara derecha un cuarto de vuelta en sentido horario.",

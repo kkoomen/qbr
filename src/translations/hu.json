@@ -23,7 +23,7 @@
         "cubeAlreadySolved": "A kockád már ki lett rakva",
         "moves": "Lépések: %{moves}",
         "solution": "Megoldás: %{algorithm}",
-        "startingPosition": "Kiinduló pozíció：\nelülső oldal: zöld\nfölső oldal: fehér\n",
+        "startingPosition": "Kiinduló pozíció: \nelülső oldal: zöld\nfölső oldal: fehér\n",
         "language": "Nyelv",
         "solveManual": {
             "R": "Forgasd el magadtól egy negyeddel a kocka jobb élét.",

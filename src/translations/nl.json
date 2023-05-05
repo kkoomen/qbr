@@ -23,7 +23,7 @@
         "cubeAlreadySolved": "Jouw kubus is al opgelost",
         "moves": "Stappen: %{moves}",
         "solution": "Oplossing: %{algorithm}",
-        "startingPosition": "Start positie：\nbovenzijde: groen\nvoorzijde: wit\n",
+        "startingPosition": "Start positie: \nbovenzijde: groen\nvoorzijde: wit\n",
         "language": "Taal",
         "solveManual": {
             "R": "Draai de rechterzijde een kwartslag van je af.",

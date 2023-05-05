@@ -23,7 +23,7 @@
         "cubeAlreadySolved": "Dein Würfel wurde bereits gelöst",
         "moves": "Bewegungen: %{moves}",
         "solution": "Lösung: %{algorithm}",
-        "startingPosition": "Startposition：\nvorne: grün\noben: weiß\n",
+        "startingPosition": "Startposition: \nvorne: grün\noben: weiß\n",
         "language": "Sprache",
         "solveManual": {
             "R":  "Drehe die rechte Seite eine Vierteldrehung von dir weg.",
