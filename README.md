@@ -57,6 +57,14 @@ switched to webcam.
 
 # Installation
 
+
+For linux users, make sure to install the following prerequisites:
+```
+$ sudo apt-get install python3-dev build-essential
+```
+
+Then, continue to install the project:
+
 ```
 $ git clone --depth 1 https://github.com/kkoomen/qbr.git
 $ cd qbr
