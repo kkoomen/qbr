@@ -4,11 +4,13 @@
 
 import os
 import json
+import platform
+
 
 class Config:
 
     def __init__(self):
-        self.config_dir = os.path.expanduser('~/.config/qbr')
+        self.config_dir = os.path.join(self.get_basedir(), '.config/qbr')
         self.settings_file = os.path.join(self.config_dir, 'settings.json')
 
         try:
@@ -18,6 +20,13 @@ class Config:
 
         if not os.path.exists(self.config_dir):
             os.mkdir(self.config_dir)
+
+    @property
+    def get_basedir(self):
+        if platform.system() == 'windows':
+            return os.path.expandvars('%appdata%')
+
+        return os.path.expanduser('~')
 
     def get_setting(self, key, default_value=None):
         """Get a specific key from the settings."""
