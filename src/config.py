@@ -10,7 +10,7 @@ import platform
 class Config:
 
     def __init__(self):
-        self.config_dir = os.path.join(self.get_basedir(), '.config/qbr')
+        self.config_dir = os.path.join(self.get_basedir, '.config/qbr')
         self.settings_file = os.path.join(self.config_dir, 'settings.json')
 
         try:
