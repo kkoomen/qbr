@@ -41,7 +41,7 @@ Simply follow the on-screen instructions and you're ready to go.
 - [Getting the solution](#getting-the-solution)
   * [How to scan your cube properly?](#how-to-scan-your-cube-properly)
 - [Keybindings](#keybindings)
-- [Paramaters](#paramaters)
+- [Parameters](#parameters)
 - [Example runs](#example-runs)
 - [Inspirational sources](#inspirational-sources)
 - [License](#license)
@@ -183,7 +183,7 @@ If you've done the steps above correctly, you should have a solution from Qbr.
 
 - `l` switch interface language
 
-# Paramaters
+# Parameters
 
 You can use `-n` or `--normalize` to also output the solution in a "human-readable" format.
 
