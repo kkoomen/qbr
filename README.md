@@ -88,14 +88,14 @@ This opens a webcam interface with the following things:
 
 ### The first 9-sticker display (upper left corner)
 
-This is preview mode. This will update immediately and display how Qbr has
-detected the colors.
+This is live preview mode displaying the detected colors.
 
 ### The second 9-sticker display (upper left corner)
 
 This is the snapshot state. When pressing `SPACE` it will create a snapshot in
 order to show you what state it has saved. You can press `SPACE` as many times
-as you'd like if it has been detected wrong.
+as you'd like if it has been detected wrong. The center piece color is used to
+detect which side to save.
 
 ### Amount of sides scanned (bottom left corner)
 
@@ -118,7 +118,7 @@ Available languages are:
 - French
 - Spanish
 - Dutch
-- 简体中文
+- Simplified Chinese 简体中文
 
 ### Full 2D cube state visualization (bottom right corner)
 
