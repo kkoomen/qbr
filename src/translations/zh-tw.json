@@ -1,5 +1,5 @@
 {
-    "zh": {
+    "zh-tw": {
         "scannedSides": "掃描面: %{num}/6",
         "calibratedSuccessfully": "校正成功",
         "quitCalibrateMode": "點擊%{keyValue}退出校正模式",
@@ -18,10 +18,10 @@
         "blue": "藍色面",
         "green": "綠色面",
         "pleaseTryAgain": "請再試一次",
-        "error": "QBR系統錯誤",
+        "error": "QBR系統錯誤，可能是顏色沒有正確識別或是魔術方塊壞掉了",
         "haventScannedAllSides": "您沒有正確掃描魔術方塊的六個面",
         "cubeAlreadySolved": "您的魔術方塊已復原",
-        "moves": "步驟：%{moves}",
+        "moves": "請先將綠色面面對自己白色朝上再開始轉解答。步驟：%{moves}",
         "solution": "復原解答：%{algorithm}",
         "startingPosition": "起始位置：\n前面：中心塊為綠色\n頂層：中心塊為白色\n",
         "language": "語言",
