@@ -123,7 +123,8 @@ Available languages are:
 - French
 - Spanish
 - Dutch
-- Simplified Chinese 简体中文
+- 简体中文
+- 台灣繁體中文
 
 ### Calibrate mode
 
