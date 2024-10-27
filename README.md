@@ -125,6 +125,7 @@ Available languages are:
 - Dutch
 - 简体中文
 - 台灣繁體中文
+- Arabic (العربية)
 
 ### Calibrate mode
 
