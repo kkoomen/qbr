@@ -126,6 +126,7 @@ Available languages are:
 - 简体中文
 - 台灣繁體中文
 - Arabic (العربية)
+- Farsi (فارسی)
 
 ### Calibrate mode
 
